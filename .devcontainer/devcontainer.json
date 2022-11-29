@@ -1,16 +1,47 @@
 {
     "name": "aag-project",
-    "image": "sagemath/sagemath:latest",
+    "image": "sagemath/sagemath:9.7",
     "runArgs": ["--entrypoint", "/bin/bash"],
-    "extensions": [
-        // Other helpers
-        "shardulm94.trailing-spaces",
-        "stkb.rewrap" // rewrap comments after n characters on one line
-    ],
+
+    // Forward Jupyter port locally, mark required
+	//"forwardPorts": [8888],
+	//"portsAttributes": {
+	//	"8888": {
+	//		"label": "Jupyter",
+	//		"requireLocalPort": true,
+	//		"onAutoForward": "ignore"
+	//	}
+	//},
+
     "settings": {
         // General settings
         "files.eol": "\n",
         "rewrap.autoWrap.enabled": true,
         "editor.formatOnSave": false
-    }
+    },
+
+    // Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"python.defaultInterpreterPath": "/home/sage/sage/local/var/lib/sage/venv-python3.10.5/bin/python3",
+				"python.linting.enabled": true,
+				"python.linting.myPyEnabled": true,
+				"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+				"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+				"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				//"ms-toolsai.jupyter",
+                // Other helpers
+                "shardulm94.trailing-spaces",
+                "stkb.rewrap" // rewrap comments after n characters on one line
+			]
+		}
+	}
 }
