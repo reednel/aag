@@ -6,24 +6,33 @@ from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 import itertools
 
 def main():
-    hg = HeisenbergGroup(n=Integer(1), R=Integer(13))
+    hg = HeisenbergGroup(n=Integer(1), R=Integer(2))
     alice = AAGExchangeObject[HeisenbergGroup](hg)
     bob = AAGExchangeObject[HeisenbergGroup](hg)
 
     # choose random subset of bg to be publicKey
-    alice.generatePublicKey(5)
-    bob.generatePublicKey(5)
+    alice.generatePublicKey(3)
+    bob.generatePublicKey(3)
 
     # choose random subset-permutation of each publicKey to be privateKey
-    alice.generatePrivateKey(3)
-    bob.generatePrivateKey(3)
+    alice.generatePrivateKey(2)
+    bob.generatePrivateKey(2)
 
     # derive shared key
-    aliceSharedKey = alice.deriveSharedKey(bob)
-    bobSharedKey = bob.deriveSharedKey(alice)
+    aliceSharedKey = alice.deriveSharedKey(0, bob)
+    bobSharedKey = bob.deriveSharedKey(1, alice)
 
-    print(aliceSharedKey)
-    print(bobSharedKey)
+    #print(aliceSharedKey)
+    #print(bobSharedKey)
+
+
+    for a, b in zip(aliceSharedKey, bobSharedKey):
+        ast = str(a).replace('\n','')
+        bst = str(b).replace('\n','')
+        print(f"Alice has {ast}, Bob has {bst}")
+
+    assert(aliceSharedKey == bobSharedKey)
+
 
 if __name__ == "__main__":
     main()

@@ -14,7 +14,7 @@ class AAGExchangeObject(Generic[T]):
     def __init__(self, group) -> None:
         self.G = group
 
-    _publicKey: T
+    _publicKey: set
 
     @property
     def publicKey(self):
@@ -25,7 +25,7 @@ class AAGExchangeObject(Generic[T]):
         self._publicKey = value
 
     @publicKey.getter
-    def publicKey(self) -> T:
+    def publicKey(self) -> set:
         return self._publicKey
 
     def generatePublicKey(self, length: int) -> None:
@@ -36,9 +36,9 @@ class AAGExchangeObject(Generic[T]):
         while len(pk) < length:
             pk.add(self.G.random_element())
 
-        self._publicKey = self.G.subgroup(pk)
+        self._publicKey = pk
 
-    _privateKey: T
+    _privateKey: list
 
     def setPrivateKey(self, value: T) -> None:
         self._privateKey = value
@@ -50,40 +50,50 @@ class AAGExchangeObject(Generic[T]):
         assert len(self.publicKey) >= length
 
         pk: list = random.choices(list(self.publicKey), k=length)
-        self._privateKey = self.G.subgroup(pk)
+        self._privateKey = pk
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
 
     def transition(self, otherExchangeObject) -> list:
+        """Returns A^-1 * b_i * A, the conjugate of this person's private key with the other person's public."""
         assert self._publicKey != None
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        A: T = self._privateKey
-        print(A)
-        b: T = otherExchangeObject.publicKey
-        print(b)
+        A: list = self._privateKey # Alice's private key
+        #print(type(A), A)
+        B: list = list(otherExchangeObject.publicKey) # Bob's public key
+        #print(type(B), B)
 
         # A^-1 * b_i * A for all b_i in B
-        Ai = self.G.subgroup([x.inverse() for x in A])
-        print(Ai)
+        Ai: list = list([x.inverse() for x in A])
+        #print(type(Ai), Ai)
 
-        transition = Ai * b * A
+        conj = lambda inside, outside: outside.inverse() * inside * outside
+
+        transition = [conj(b,a) for a in A for b in B]
 
         return transition
         
-    def deriveSharedKey(self, otherExchangeObject) -> list:
+    def deriveSharedKey(self, first: bool, otherExchangeObject) -> list:
         assert self._publicKey != None
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        A = otherExchangeObject.publicKey
-        BiAB = otherExchangeObject.transition(self) # BiAB = B^-1 * a_i * B for all a_i in A
-        B = self._privateKey
+        A: list = self._privateKey
+        BiAB: list = otherExchangeObject.transition(self) # BiAB = B^-1 * a_i * B for all a_i in A
+                                                          #     or A^-1 * b_i * A for all b_i in B
+        B: list = list(otherExchangeObject.publicKey)
+
+        gamma1 = lambda u, v: u.inverse() * v
+        gamma2 = lambda u, v: v.inverse() * u
+        beta = lambda u, v: v.transition(u)
 
         # key is Ai * BiAB
-
-        sharedKey = [A[i].inverse() * B[i] * A[i] for i in range(len(B))]
+        if first:
+            sharedKey = [gamma1(a, b) for a in A for b in BiAB]
+        else:
+            sharedKey = [gamma2(a, b) for a in A for b in BiAB]
 
         return sharedKey
