@@ -1,22 +1,22 @@
 from sage.all import *
 from aag import AAGExchangeObject
 
-from sage.groups.braid import BraidGroup, Braid
+from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 
 import itertools
 
 def main():
-    bg = BraidGroup(3)
-    alice = AAGExchangeObject[bg]()
-    bob = AAGExchangeObject[bg]()
+    hg = HeisenbergGroup(n=Integer(1), R=Integer(13))
+    alice = AAGExchangeObject[HeisenbergGroup](hg)
+    bob = AAGExchangeObject[HeisenbergGroup](hg)
 
     # choose random subset of bg to be publicKey
-    alice.publicKey: set[Braid] = {bg.random_element() for _ in range(3)}
-    bob.publicKey: set[Braid] = {bg.random_element() for _ in range(3)}
+    alice.generatePublicKey(5)
+    bob.generatePublicKey(5)
 
-    # choose random permutation of each publicKey to be privateKey
-    alice.privateKey: list[Braid] = random.shuffle(list(alice.publicKey))[:2]
-    bob.privateKey: list[Braid] = random.shuffle(list(bob.publicKey))[:2]
+    # choose random subset-permutation of each publicKey to be privateKey
+    alice.generatePrivateKey(3)
+    bob.generatePrivateKey(3)
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(bob)

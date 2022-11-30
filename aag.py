@@ -1,7 +1,7 @@
 from sage.all import *
-from abc import ABC, abstractmethod
 from sage.groups.group import Group
 from typing import TypeVar, Generic
+import random
 
 T = TypeVar('T', bound=Group)
 
@@ -10,10 +10,10 @@ class AAGExchangeObject(Generic[T]):
     # holds reference to parent group, and selected public key, which is a
     # subset of that group
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, group) -> None:
+        self.parent_group = group
 
-    _publicKey: list = None  # TODO subgroup type? What should be the type here?
+    _publicKey: list
 
     @property
     def publicKey(self):
@@ -27,12 +27,28 @@ class AAGExchangeObject(Generic[T]):
     def publicKey(self):
         return self._publicKey
 
-    _privateKey: list = None
+    def generatePublicKey(self, length: int) -> None:
+        assert length > 0
+        assert self.parent_group.order() >= length
 
-    def privateKey(self, value) -> None:
+        pk: set = set()
+        while len(pk) < length:
+            pk.add(self.parent_group.random_element())
+
+        self._publicKey = list(pk)
+
+    _privateKey: list
+
+    def setPrivateKey(self, value) -> None:
         self._privateKey = value
+    
+    privateKey = property(None, setPrivateKey) # make private key unreadable
 
-    privateKey = property(None, privateKey) # make private key unreadable
+    def generatePrivateKey(self, length: int) -> None:
+        assert length > 0
+        assert len(self.publicKey) >= length
+
+        self._privateKey = random.choices(list(self.publicKey))
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
@@ -42,8 +58,9 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        # AAG multiplication
-        # TODO @reed nelson
-        sharedKey = None
+        A = otherExchangeObject.publicKey
+        B = self._privateKey
+
+        sharedKey = [A[i].inverse() * B[i] * A[i] for i in range(len(B))]
 
         return sharedKey
