@@ -1,0 +1,11 @@
+import sage.all
+H = sage.all.groups.matrix.Heisenberg()
+print(H)
+print(H.gens())
+X, Y, Z = H.gens()
+print(Z * X * Y**-1)
+print(X * Y * X**-1 * Y**-1 == Z)
+H = sage.all.groups.matrix.Heisenberg(sage.all.Integer(5))
+print(H)
+H = sage.all.groups.matrix.Heisenberg(sage.all.Integer(3), sage.all.Integer(13))
+print(H)
