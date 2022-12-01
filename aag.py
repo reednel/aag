@@ -56,7 +56,6 @@ class AAGExchangeObject(Generic[T]):
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
 
     def transition(self, otherExchangeObject) -> list:
-        """Returns A^-1 * b_i * A, the conjugate of this person's private key with the other person's public."""
         assert self._publicKey != None
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
@@ -70,7 +69,7 @@ class AAGExchangeObject(Generic[T]):
         Ai: list = list([x.inverse() for x in A])
         #print(type(Ai), Ai)
 
-        conj = lambda inside, outside: outside.inverse() * inside * outside
+        conj = lambda x,y: y.inverse() * x * y
 
         transition = [conj(b,a) for a in A for b in B]
 
@@ -81,19 +80,23 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
+        inv = lambda l : list(map(lambda x: x.inverse(), l))
+        conj = lambda outside, inside : list(map(lambda x, y: y.inverse() * x * y, inside, outside))
+
         A: list = self._privateKey
-        BiAB: list = otherExchangeObject.transition(self) # BiAB = B^-1 * a_i * B for all a_i in A
-                                                          #     or A^-1 * b_i * A for all b_i in B
-        B: list = list(otherExchangeObject.publicKey)
+        Ai: list = inv(A)
 
-        gamma1 = lambda u, v: u.inverse() * v
-        gamma2 = lambda u, v: v.inverse() * u
-        beta = lambda u, v: v.transition(u)
+        B: list = list(otherExchangeObject.publicKey) # Bob's public key
+        Bi: list = inv(B)
 
-        # key is Ai * BiAB
-        if first:
-            sharedKey = [gamma1(a, b) for a in A for b in BiAB]
-        else:
-            sharedKey = [gamma2(a, b) for a in A for b in BiAB]
+        BiAB: list = [x * y * z for x,y,z in zip(Bi, A, B)]
+        #AiBA: list = [x * y * z for x,y,z in zip(Ai, B, A)]
+        #print(type(BiAB), BiAB)
 
-        return sharedKey
+        if first: # want AiBiAB
+            Ka = [x * y for x,y in zip(Ai, BiAB)]
+            return Ka
+        else: # want BiAiBA which is here inv(AiBiAB)
+            Kb = inv([x * y for x,y in zip(BiAB, Ai)])
+            return Kb
+

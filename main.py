@@ -19,8 +19,8 @@ def main():
     bob.generatePrivateKey(2)
 
     # derive shared key
-    aliceSharedKey = alice.deriveSharedKey(0, bob)
-    bobSharedKey = bob.deriveSharedKey(1, alice)
+    aliceSharedKey = alice.deriveSharedKey(True, bob)
+    bobSharedKey = bob.deriveSharedKey(False, alice)
 
     #print(aliceSharedKey)
     #print(bobSharedKey)
