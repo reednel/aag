@@ -14,7 +14,7 @@ class AAGExchangeObject(Generic[T]):
     def __init__(self, group) -> None:
         self.G = group
 
-    _publicKey: set
+    _publicKey: list
 
     @property
     def publicKey(self):
@@ -25,7 +25,7 @@ class AAGExchangeObject(Generic[T]):
         self._publicKey = value
 
     @publicKey.getter
-    def publicKey(self) -> set:
+    def publicKey(self) -> list:
         return self._publicKey
 
     def generatePublicKey(self, length: int) -> None:
@@ -36,7 +36,7 @@ class AAGExchangeObject(Generic[T]):
         while len(pk) < length:
             pk.add(self.G.random_element())
 
-        self._publicKey = pk
+        self._publicKey = list(pk)
 
     _privateKey: list
 
@@ -60,20 +60,16 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        A: list = self._privateKey # Alice's private key
-        #print(type(A), A)
+        inv = lambda l : list(map(lambda x: x.inverse(), l))
+        triple_multiply = lambda X, Y, Z: [x*y*z for x in X for y in Y for z in Z]
+
+        A: list = self._privateKey
         B: list = list(otherExchangeObject.publicKey) # Bob's public key
-        #print(type(B), B)
+        Ai: list = inv(A)
 
-        # A^-1 * b_i * A for all b_i in B
-        Ai: list = list([x.inverse() for x in A])
-        #print(type(Ai), Ai)
+        AiBA: list = triple_multiply(Ai, B, A)
 
-        conj = lambda x,y: y.inverse() * x * y
-
-        transition = [conj(b,a) for a in A for b in B]
-
-        return transition
+        return AiBA
         
     def deriveSharedKey(self, first: bool, otherExchangeObject) -> list:
         assert self._publicKey != None
@@ -82,21 +78,22 @@ class AAGExchangeObject(Generic[T]):
 
         inv = lambda l : list(map(lambda x: x.inverse(), l))
         conj = lambda outside, inside : list(map(lambda x, y: y.inverse() * x * y, inside, outside))
+        triple_multiply = lambda X, Y, Z: [x*y*z for x in X for y in Y for z in Z]
 
-        A: list = self._privateKey
+        a_bar: list = self.publicKey # Alice's public set
+        A: list = self._privateKey # Alice's private key
         Ai: list = inv(A)
+        A_indices_in_a_bar: list = [a_bar.index(a) for a in A]
 
-        B: list = list(otherExchangeObject.publicKey) # Bob's public key
-        Bi: list = inv(B)
+        a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
+        
+        # A is a subset of a_bar, so we can use A to filter b_prime index-wise
+        a_prime_s: list = [a_prime[i] for i in A_indices_in_a_bar]
 
-        BiAB: list = [x * y * z for x,y,z in zip(Bi, A, B)]
-        #AiBA: list = [x * y * z for x,y,z in zip(Ai, B, A)]
-        #print(type(BiAB), BiAB)
-
-        if first: # want AiBiAB
-            Ka = [x * y for x,y in zip(Ai, BiAB)]
+        if first:
+            Ka = [x * y for x in Ai for y in a_prime_s]
             return Ka
-        else: # want BiAiBA which is here inv(AiBiAB)
-            Kb = inv([x * y for x,y in zip(BiAB, Ai)])
+        else:
+            Kb = inv([x * y for x in Ai for y in a_prime_s])
             return Kb
 
