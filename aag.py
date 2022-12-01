@@ -73,16 +73,23 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        inv = lambda l : list(map(lambda x: x.inverse(), l))
-        conj = lambda outside, inside : list(map(lambda x, y: y.inverse() * x * y, inside, outside))
-        triple_multiply = lambda X, Y, Z: [x*y*z for x in X for y in Y for z in Z]
+        inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
 
-
-        A: list = self._privateKey
+        A: list = self._privateKey # Alice's private key
         B: list = list(otherExchangeObject.publicKey) # Bob's public key
-        Ai: list = inv(A)
+        Ai: list = inv(A) # Inverse of Alice's private key
 
-        AiBA: list = triple_multiply(Ai, B, A)
+        # Wikipedia calls this the "transition"
+        AiBA: list = [] # should contain the value of Ai * B * A
+
+        # TODO problem area
+        for b in B:
+            temp = []
+            for a, ai in zip(A, Ai): # iterates A, A^-1 in parallel
+                temp.append(a * b * ai)
+            AiBA.append(reduce(lambda x, y: x*y, temp)) # probably wrong, please delete and start over
+
+        assert len(AiBA) == len(B) # My current understanding is that B and AiBA should be the same length, 1-to-1
 
         return AiBA
         
@@ -91,31 +98,39 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        inv = lambda l : list(map(lambda x: x.inverse(), l))
-        conj = lambda outside, inside : list(map(lambda x, y: y.inverse() * x * y, inside, outside))
-        triple_multiply = lambda X, Y, Z: [x*y*z for x in X for y in Y for z in Z]
+        # All variables defined as in Heisenberg group paper: https://arxiv.org/pdf/1403.4165.pdf
+
+        inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
 
         a_bar: list = self.publicKey # Alice's public set
         A: list = self._privateKey # Alice's private key
-        Ai: list = inv(A)
+        Ai: list = inv(A) # Inverse of Alice's private key
 
         # transition
         a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
         
-        # A is a subset of a_bar, so we can use A to filter a_prime index-wise
-        # at this point also handle the epsilon exponent (invert things that are inverted in sk)
+        # a_prime_s is a subset of a_prime
+        # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all elements of Alice's public set a_bar
+        # a_prime_s = B^-1 * A * B, that is, it only contains conjugates of elements in Alice's private key A
         a_prime_s: list = []
 
+        # When Alice's private key was chosen, we saved which public-set elements the private key elements
+        # corresponded to, and whether the public set element was inverted or not.
         for index, is_inverse in self._privateKeySource:
             if is_inverse:
                 a_prime_s.append(a_prime[index].inverse())
             else:
                 a_prime_s.append(a_prime[index])
 
-        Ka = reduce(lambda x, y: x*y, Ai) * reduce(lambda x, y: x*y, a_prime_s)
+        # We first multiply together all the elements in A^-1
+        # Then we multiply together all the elements in a_prime_s
+        # Then we multiply the two results together
+        Ka = reduce(lambda x, y: x*y, Ai) * reduce(lambda x, y: x*y, a_prime_s) # TODO may be wrong
 
-        if first:
+        # This currently produces a single matrix for Ka. I am unsure whether Ka should be a matrix or a list of matrices.
+
+        if first: # Alice
             return Ka
-        else:
-            return Ka.inverse()
+        else: # Bob
+            return Ka.inverse() # Kb = Ka^-1
 

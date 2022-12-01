@@ -1,11 +1,12 @@
 from sage.all import *
 from aag import AAGExchangeObject
+import random
 
 from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 
 import itertools
 
-def main():
+def main() -> int:
     hg = HeisenbergGroup(n=Integer(1), R=Integer(2))
     alice = AAGExchangeObject[HeisenbergGroup](hg)
     bob = AAGExchangeObject[HeisenbergGroup](hg)
@@ -28,14 +29,26 @@ def main():
     print("---------- BOB ----------")
     print(bobSharedKey)
 
+    # If the key is a list, uncomment these lines to print Alice's and Bob's side by side
 
     #for a, b in zip(aliceSharedKey, bobSharedKey):
     #    ast = str(a).replace('\n','')
     #    bst = str(b).replace('\n','')
     #    print(f"Alice has {ast}, Bob has {bst}")
 
-    assert(aliceSharedKey == bobSharedKey)
+    return (aliceSharedKey == bobSharedKey)
 
 
 if __name__ == "__main__":
-    main()
+    successes = [0 for i in range(10)]
+    for i in range(10):
+        print(f"---------- ITERATION {i} (random seed = {i}) ----------")
+        random.seed(i)
+        success = main()
+        successes[i] = success
+    
+    for i, success in enumerate(successes):
+        print(f"Seed {i}: {'pass' if success else 'fail'}")
+
+    print(f"Success rate: {sum(successes) / len(successes) * 100}%")
+
