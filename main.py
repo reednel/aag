@@ -22,14 +22,17 @@ def main():
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
-    #print(aliceSharedKey)
-    #print(bobSharedKey)
+    print("---------- ALICE ----------")
+    print(aliceSharedKey)
+
+    print("---------- BOB ----------")
+    print(bobSharedKey)
 
 
-    for a, b in zip(aliceSharedKey, bobSharedKey):
-        ast = str(a).replace('\n','')
-        bst = str(b).replace('\n','')
-        print(f"Alice has {ast}, Bob has {bst}")
+    #for a, b in zip(aliceSharedKey, bobSharedKey):
+    #    ast = str(a).replace('\n','')
+    #    bst = str(b).replace('\n','')
+    #    print(f"Alice has {ast}, Bob has {bst}")
 
     assert(aliceSharedKey == bobSharedKey)
 
