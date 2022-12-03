@@ -14,8 +14,10 @@ class AAGExchangeObject(Generic[T]):
 
     def __init__(self, group) -> None:
         self.G = group
+        self._publicKey: list
+        self._privateKey: T
+        self._privateKeySource: list[tuple[int, bool]] # entries: (pk index, is_inverse) for all chosen elements in sk
 
-    _publicKey: list
 
     @property
     def publicKey(self):
@@ -39,13 +41,9 @@ class AAGExchangeObject(Generic[T]):
 
         self._publicKey = list(pk)
 
-    _privateKeySource: list[tuple[int, bool]] # entries: (pk index, is_inverse) for all chosen elements in sk
-
     def setPrivateKey(self, value: T) -> None:
         self._privateKey = value
     
-    privateKey = property(None, setPrivateKey) # make private key unreadable
-
     def generatePrivateKey(self, length: int) -> None:
         assert length > 0
         assert len(self.publicKey) >= length
@@ -63,6 +61,8 @@ class AAGExchangeObject(Generic[T]):
 
         # private key is ordered product of chosen elements
         self._privateKey = reduce(lambda x, y: x * y, sk)
+        assert self._privateKey in self.G
+        assert self._privateKey != self.G.one() # might be a problem once in a while, TODO delete when bug fixed
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr

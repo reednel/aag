@@ -2,12 +2,13 @@ from sage.all import *
 from aag import AAGExchangeObject
 import random
 
+from sage.all import Integer
 from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 
 import itertools
 
 def main() -> int:
-    hg = HeisenbergGroup(n=Integer(3), R=Integer(2))
+    hg = HeisenbergGroup(n=Integer(3), R=Integer(10))
     alice = AAGExchangeObject[HeisenbergGroup](hg)
     bob = AAGExchangeObject[HeisenbergGroup](hg)
 
@@ -24,9 +25,11 @@ def main() -> int:
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     print("---------- ALICE ----------")
+    print(alice._privateKey)
     print(aliceSharedKey)
 
     print("---------- BOB ----------")
+    print(bob._privateKey)
     print(bobSharedKey)
 
     # If the key is a list, uncomment these lines to print Alice's and Bob's side by side
