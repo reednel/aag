@@ -39,7 +39,6 @@ class AAGExchangeObject(Generic[T]):
 
         self._publicKey = list(pk)
 
-    _privateKey
     _privateKeySource: list[tuple[int, bool]] # entries: (pk index, is_inverse) for all chosen elements in sk
 
     def setPrivateKey(self, value: T) -> None:
@@ -54,19 +53,16 @@ class AAGExchangeObject(Generic[T]):
         # choose random indices from publicKey
         indices = random.choices(range(len(self.publicKey)), k=length)
         is_inverses = random.choices([True, False], k=length)
+        self._privateKeySource = list(zip(indices, is_inverses))
 
+        # collect chosen elements and invert if randomly selected
         sk = [self.publicKey[i] for i in indices]
         for i in range(len(sk)):
             if is_inverses[i]:
                 sk[i] = sk[i].inverse()
 
-        skProd = self.G.one()
-        for x in sk:
-            skProd *= x
-
-        self._privateKeySource = list(zip(indices, is_inverses))
-
-        self._privateKey = skProd
+        # private key is ordered product of chosen elements
+        self._privateKey = reduce(lambda x, y: x * y, sk)
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
@@ -76,14 +72,12 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-
         A = self._privateKey # Alice's private key
         B: list = list(otherExchangeObject.publicKey) # Bob's public key
         Ai = A.inverse() # Inverse of Alice's private key
 
         # Wikipedia calls this the "transition"
         AiBA: list = [A * b * Ai for b in B] # should contain the value of Ai * B * A
-
 
         return AiBA
         
@@ -94,18 +88,15 @@ class AAGExchangeObject(Generic[T]):
 
         # All variables defined as in Heisenberg group paper: https://arxiv.org/pdf/1403.4165.pdf
 
-        # FROM MAIN =======================
-        inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
-
-        a_bar: list = self.publicKey # Alice's public set
-        A: list = self._privateKey # Alice's private key
-        Ai: list = inv(A) # Inverse of Alice's private key
+        # Distribute Ai to all elements of a_prime and take the product
+        # Not certain that's the right thing to do
+        A = self._privateKey # Alice's private key
+        Ai = A.inverse() # Inverse of Alice's private key
 
         # transition
+        # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all elements of Alice's public set a_bar
         a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
         
-        # a_prime_s is a subset of a_prime
-        # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all elements of Alice's public set a_bar
         # a_prime_s = B^-1 * A * B, that is, it only contains conjugates of elements in Alice's private key A
         a_prime_s: list = []
 
@@ -117,29 +108,11 @@ class AAGExchangeObject(Generic[T]):
             else:
                 a_prime_s.append(a_prime[index])
 
-        # We first multiply together all the elements in A^-1
-        # Then we multiply together all the elements in a_prime_s
-        # Then we multiply the two results together
-        Ka = reduce(lambda x, y: x*y, Ai) * reduce(lambda x, y: x*y, a_prime_s) # TODO may be wrong
+        a_prime_s_prod = reduce(lambda x, y: x * y, a_prime_s)
 
-        # This currently produces a single matrix for Ka. I am unsure whether Ka should be a matrix or a list of matrices.
-        # END FROM MAIN ======================
+        Ka = Ai * a_prime_s_prod
 
         if first: # Alice
-            # Distribute Ai to all elements of a_prime and take the product
-            # Not certain that's the right thing to do
-            A = self._privateKey # Alice's private key
-            Ai = A.inverse() # Inverse of Alice's private key
-
-            # transition
-            a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
-            Ka = reduce(lambda x, y: x * Ai * y, a_prime, self.G.one()) 
             return Ka
         else: # Bob
-            B = self._privateKey
-            Bi = B.inverse() # Inverse of Alice's private key
-
-            # transition
-            b_prime: list = otherExchangeObject.transition(self)
-            Kb = reduce(lambda x, y: x * y * B, b_prime, self.G.one())
-            return Kb
+            return Ka.inverse()
