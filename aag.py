@@ -57,7 +57,7 @@ class AAGExchangeObject(Generic[T]):
             if is_inverses[i]:
                 sk[i] = sk[i].inverse()
 
-        skProd = 1
+        skProd = self.G.one()
         for x in sk:
             skProd *= x
 
@@ -78,11 +78,23 @@ class AAGExchangeObject(Generic[T]):
         Ai = A.inverse() # Inverse of Alice's private key
 
         # Wikipedia calls this the "transition"
-        AiBA: list = [] # should contain the value of Ai * B * A
+        AiBA: list = [A * b * Ai for b in B] # should contain the value of Ai * B * A
 
-        # TODO problem area
-        for b in B:
-            AiBA.append(A * b * Ai)
+        return AiBA
+
+    def bob_transition(self, otherExchangeObject) -> list:
+        assert self._publicKey != None
+        assert otherExchangeObject.publicKey != None
+        assert self._privateKey != None
+
+        # inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
+
+        A = self._privateKey # Alice's private key
+        B: list = list(otherExchangeObject.publicKey) # Bob's public key
+        Ai = A.inverse() # Inverse of Alice's private key
+
+        # Wikipedia calls this the "transition"
+        AiBA: list = [A * b.inverse() * Ai for b in B] # should contain the value of Ai * B * A
 
         return AiBA
         
@@ -94,19 +106,26 @@ class AAGExchangeObject(Generic[T]):
         # All variables defined as in Heisenberg group paper: https://arxiv.org/pdf/1403.4165.pdf
 
         # a_bar: list = self.publicKey # Alice's public set
-        A = self._privateKey # Alice's private key
-        Ai = A.inverse() # Inverse of Alice's private key
+        
+        
 
-        # transition
-        a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
-
-        # Distribute Ai to all elements of a_prime and take the product
-        # Not certain that's the right thing to do
-        Ka = 1
-        for x in a_prime:
-            Ka *= (Ai * x)
+        
 
         if first: # Alice
+            # Distribute Ai to all elements of a_prime and take the product
+            # Not certain that's the right thing to do
+            A = self._privateKey # Alice's private key
+            Ai = A.inverse() # Inverse of Alice's private key
+
+            # transition
+            a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
+            Ka = reduce(lambda x, y: x * Ai * y, a_prime, self.G.one()) 
             return Ka
         else: # Bob
-            return Ka.inverse() # Kb = Ka^-1
+            B = self._privateKey
+            Bi = B.inverse() # Inverse of Alice's private key
+
+            # transition
+            b_prime: list = otherExchangeObject.transition(self)
+            Kb = reduce(lambda x, y: x * y * B, b_prime, self.G.one())
+            return Kb

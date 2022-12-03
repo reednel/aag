@@ -7,7 +7,7 @@ from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 import itertools
 
 def main() -> int:
-    hg = HeisenbergGroup(n=Integer(1), R=Integer(2))
+    hg = HeisenbergGroup(n=Integer(3), R=Integer(2))
     alice = AAGExchangeObject[HeisenbergGroup](hg)
     bob = AAGExchangeObject[HeisenbergGroup](hg)
 
