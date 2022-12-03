@@ -11,12 +11,9 @@ from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 
 import itertools
 
-def main() -> int:
-    # HEISENBERG GROUP
-    # Note: let n be odd, R be prime
-    hg = HeisenbergGroup(n=Integer(3), R=Integer(7))
-    alice = AAGExchangeObject[HeisenbergGroup](hg)
-    bob = AAGExchangeObject[HeisenbergGroup](hg)
+def test(group_type, group_object, pk_length, sk_length):
+    alice = AAGExchangeObject[group_type](group_object)
+    bob = AAGExchangeObject[group_type](group_object)
 
     # # BRAID GROUP
     # bg = BraidGroup_class(names=("a","b","c"))
@@ -29,12 +26,12 @@ def main() -> int:
     # bob = AAGExchangeObject[LinearMatrixGroup_generic](mg)
 
     # choose random subset of bg to be publicKey
-    alice.generatePublicKey(23)
-    bob.generatePublicKey(23)
+    alice.generatePublicKey(pk_length)
+    bob.generatePublicKey(pk_length)
 
     # choose random subset-permutation of each publicKey to be privateKey
-    alice.generatePrivateKey(13)
-    bob.generatePrivateKey(13)
+    alice.generatePrivateKey(sk_length)
+    bob.generatePrivateKey(sk_length)
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
@@ -59,9 +56,15 @@ def main() -> int:
 
     return (aliceSharedKey == bobSharedKey)
 
+def main() -> int:
+    # HEISENBERG GROUP
+    # Note: let n be odd, R be prime
+    hg = HeisenbergGroup(n=Integer(3), R=Integer(7))
+    return test(HeisenbergGroup, hg, 23, 13)
+
 
 if __name__ == "__main__":
-    tests = 1
+    tests = 10
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")
