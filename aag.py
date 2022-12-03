@@ -39,14 +39,13 @@ class AAGExchangeObject(Generic[T]):
 
         self._publicKey = list(pk)
 
-    _privateKey: list
+    _privateKey
     _privateKeySource: list[tuple[int, bool]] # entries: (pk index, is_inverse) for all chosen elements in sk
 
     def setPrivateKey(self, value: T) -> None:
         self._privateKey = value
     
     privateKey = property(None, setPrivateKey) # make private key unreadable
-
 
     def generatePrivateKey(self, length: int) -> None:
         assert length > 0
@@ -61,9 +60,13 @@ class AAGExchangeObject(Generic[T]):
             if is_inverses[i]:
                 sk[i] = sk[i].inverse()
 
-        self._privateKey = sk
+        skProd = self.G.one()
+        for x in sk:
+            skProd *= x
+
         self._privateKeySource = list(zip(indices, is_inverses))
 
+        self._privateKey = skProd
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
@@ -73,23 +76,14 @@ class AAGExchangeObject(Generic[T]):
         assert otherExchangeObject.publicKey != None
         assert self._privateKey != None
 
-        inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
 
-        A: list = self._privateKey # Alice's private key
+        A = self._privateKey # Alice's private key
         B: list = list(otherExchangeObject.publicKey) # Bob's public key
-        Ai: list = inv(A) # Inverse of Alice's private key
+        Ai = A.inverse() # Inverse of Alice's private key
 
         # Wikipedia calls this the "transition"
-        AiBA: list = [] # should contain the value of Ai * B * A
+        AiBA: list = [A * b * Ai for b in B] # should contain the value of Ai * B * A
 
-        # TODO problem area
-        for b in B:
-            temp = []
-            for a, ai in zip(A, Ai): # iterates A, A^-1 in parallel
-                temp.append(a * b * ai)
-            AiBA.append(reduce(lambda x, y: x*y, temp)) # probably wrong, please delete and start over
-
-        assert len(AiBA) == len(B) # My current understanding is that B and AiBA should be the same length, 1-to-1
 
         return AiBA
         
@@ -100,6 +94,7 @@ class AAGExchangeObject(Generic[T]):
 
         # All variables defined as in Heisenberg group paper: https://arxiv.org/pdf/1403.4165.pdf
 
+        # FROM MAIN =======================
         inv = lambda l : list(map(lambda x: x.inverse(), l)) # inverse of each element in list
 
         a_bar: list = self.publicKey # Alice's public set
@@ -128,9 +123,23 @@ class AAGExchangeObject(Generic[T]):
         Ka = reduce(lambda x, y: x*y, Ai) * reduce(lambda x, y: x*y, a_prime_s) # TODO may be wrong
 
         # This currently produces a single matrix for Ka. I am unsure whether Ka should be a matrix or a list of matrices.
+        # END FROM MAIN ======================
 
         if first: # Alice
+            # Distribute Ai to all elements of a_prime and take the product
+            # Not certain that's the right thing to do
+            A = self._privateKey # Alice's private key
+            Ai = A.inverse() # Inverse of Alice's private key
+
+            # transition
+            a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
+            Ka = reduce(lambda x, y: x * Ai * y, a_prime, self.G.one()) 
             return Ka
         else: # Bob
-            return Ka.inverse() # Kb = Ka^-1
+            B = self._privateKey
+            Bi = B.inverse() # Inverse of Alice's private key
 
+            # transition
+            b_prime: list = otherExchangeObject.transition(self)
+            Kb = reduce(lambda x, y: x * y * B, b_prime, self.G.one())
+            return Kb
