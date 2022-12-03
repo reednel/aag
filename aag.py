@@ -18,7 +18,6 @@ class AAGExchangeObject(Generic[T]):
         self._privateKey: T
         self._privateKeySource: list[tuple[int, bool]] # entries: (pk index, is_inverse) for all chosen elements in sk
 
-
     @property
     def publicKey(self):
         return self._publicKey
@@ -43,7 +42,7 @@ class AAGExchangeObject(Generic[T]):
 
     def setPrivateKey(self, value: T) -> None:
         self._privateKey = value
-    
+
     def generatePrivateKey(self, length: int) -> None:
         assert length > 0
         assert len(self.publicKey) >= length
@@ -80,7 +79,7 @@ class AAGExchangeObject(Generic[T]):
         AiBA: list = [A * b * Ai for b in B] # should contain the value of Ai * B * A
 
         return AiBA
-        
+
     def deriveSharedKey(self, first: bool, otherExchangeObject) -> list:
         assert self._publicKey != None
         assert otherExchangeObject.publicKey != None
@@ -96,7 +95,7 @@ class AAGExchangeObject(Generic[T]):
         # transition
         # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all elements of Alice's public set a_bar
         a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
-        
+
         # a_prime_s = B^-1 * A * B, that is, it only contains conjugates of elements in Alice's private key A
         a_prime_s: list = []
 
@@ -109,6 +108,15 @@ class AAGExchangeObject(Generic[T]):
                 a_prime_s.append(a_prime[index])
 
         a_prime_s_prod = reduce(lambda x, y: x * y, a_prime_s)
+
+        # # DEBUG
+        # print("Ai")
+        # print(Ai)
+        # print("a_prime_s_prod")
+        # print(a_prime_s_prod)
+
+        # NOTICE: neither Ai nor a_prime_s_prod are identity or near-identity...
+        # I have verified the product is actually Ka
 
         Ka = Ai * a_prime_s_prod
 
