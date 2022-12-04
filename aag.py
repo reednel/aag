@@ -87,13 +87,12 @@ class AAGExchangeObject(Generic[T]):
 
         # All variables defined as in Heisenberg group paper: https://arxiv.org/pdf/1403.4165.pdf
 
-        # Distribute Ai to all elements of a_prime and take the product
-        # Not certain that's the right thing to do
         A = self._privateKey # Alice's private key
         Ai = A.inverse() # Inverse of Alice's private key
 
         # transition
-        # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all elements of Alice's public set a_bar
+        # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all
+        # elements of Alice's public set a_bar
         a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
 
         # a_prime_s = B^-1 * A * B, that is, it only contains conjugates of elements in Alice's private key A
@@ -109,16 +108,32 @@ class AAGExchangeObject(Generic[T]):
 
         a_prime_s_prod = reduce(lambda x, y: x * y, a_prime_s)
 
-        # # DEBUG
-        # print("Ai")
-        # print(Ai)
-        # print("a_prime_s_prod")
-        # print(a_prime_s_prod)
-
-        # NOTICE: neither Ai nor a_prime_s_prod are identity or near-identity...
-        # I have verified the product is actually Ka
-
+        # THIS MULTIPLICATION IS BAD AND I CAN'T FATHOM WHY
         Ka = Ai * a_prime_s_prod
+
+        print("Ai type:", type(Ai))
+        print("apsp type:", type(a_prime_s_prod))
+        print("Ka type:", type(Ka))
+
+        # DEBUG
+        # [actual] - [correct]
+        if (first):
+            print("A:     ", A, "- (1,2,5)(3,4)")
+            print("Ai:    ", Ai, "- (1,5,2)(3,4)")
+            print("BiAB:  ", a_prime, "- [(1,2,4), (3,4), (1,4,5)(2,3)]")
+            print("a'_s:  ", a_prime_s, "- [(1,4,5)(2,3)]")
+            print("a'_s X:", a_prime_s_prod, "- (1,4,5)(2,3)")
+            print("AiBiAB:", Ka, "- (1,3)(2,4)")
+            print("")
+        else:
+            print("B:     ", A, "- (1,2,4,5)")
+            print("Bi:    ", Ai, "- (1,5,4,2)")
+            print("AiBA:  ", a_prime, "- [(2,5,3,4), (1,5,2,3), (1,3,2,5,4)]")
+            print("b'_s:  ", a_prime_s, "- [(1,3,2,5)]")
+            print("b'_s X:", a_prime_s_prod, "- (1,3,2,5)")
+            print("BiAiBA:", Ka, "- (1,3)(2,4)")
+            print("AiBiAB:", Ka.inverse(), "- (1,3)(2,4)")
+            print("")
 
         if first: # Alice
             return Ka
