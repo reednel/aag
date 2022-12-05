@@ -1,0 +1,37 @@
+##################
+# Imports
+##################
+from sage.all import *
+from sage.rings.integer_ring import ZZ
+import sage.algebras.lie_algebras
+
+##################
+# Variables
+##################
+## Ring base Z/RZ
+# ZZ.quo(R*ZZ): Ring of integers modulo R
+R = ZZ.quo(0*ZZ)
+
+## Rank of the Heisenberg Algebra: H^(2n+1)
+# Corresponding matrices are of size n+2
+# Hirsch length = 2n+1
+n = Integer(1)
+
+## Size of public and private keys for AAG
+La_public = Integer(10) # length of Alice's public key
+La_private = Integer(10) # length of Alice's private key
+Lb_public = Integer(10) # length of Bob's public key
+Lb_private = Integer(10) # length of Bob's private key
+
+##################
+# Functions
+##################
+
+
+##################
+# Main
+##################
+
+H = lie_algebras.Heisenberg(R, n, representation="matrix")
+print(sorted(dict(H.basis()).items()))
+
