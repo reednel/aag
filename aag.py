@@ -29,14 +29,31 @@ class AAGExchangeObject(Generic[T]):
     def publicKey(self) -> list:
         return self._publicKey
 
+    def random_element_H(self, n, R):
+        n += 2 # matrix dim is 2 greater than n
+        H = matrix(ZZ, n, n, lambda i,j: 1 if i == j else 0)
+        for i in range(1, n-1):
+            H[0,i] = random.randint(0, R)
+            H[i,n-1] = random.randint(0, R)
+        H[0,n-1] = random.randint(0, R)
+
+        g = self.G.Element(self.G, H, check=False) # Need check=false to circumvent O(|G|) check
+        return g
+
+    # def random_element_B(self, names):
+    #     B =
+    #     g = self.G.Element(self.G, B, check=False) # Need check=false to circumvent O(|G|) check
+    #     return g
+
     def generatePublicKey(self, length: int) -> None:
         assert length > 0
         assert self.G.order() >= length
 
         pk: set = set()
         while len(pk) < length:
-            pk.add(self.G.random_element()) # very slow for large groups
-            print("0.x") # debug
+            # g = self.G.random_element() # very slow for large groups
+            g = self.random_element_H(5, sys.maxsize)
+            pk.add(g)
 
         self._publicKey = list(pk)
 

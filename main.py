@@ -21,14 +21,11 @@ def test(group_type, group_object, pk_length, sk_length):
 
     # choose random subset of bg to be publicKey
     alice.generatePublicKey(pk_length)
-    print("1") # debug
     bob.generatePublicKey(pk_length)
-    print("1") # debug
 
     # choose random subset-permutation of each publicKey to be privateKey
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
-    print("2") # debug
 
     # # Keep for future debugging
     # alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
@@ -38,19 +35,18 @@ def test(group_type, group_object, pk_length, sk_length):
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
-    print("3") # debug
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     print("---------- ALICE ----------")
-    print(alice.publicKey)
-    print("-")
+    # print(alice.publicKey)
+    # print("-")
     print(alice._privateKey)
     print("-")
     print(aliceSharedKey)
 
     print("---------- BOB ----------")
-    print(bob.publicKey)
-    print("-")
+    # print(bob.publicKey)
+    # print("-")
     print(bob._privateKey)
     print("-")
     print(bobSharedKey)
@@ -63,9 +59,9 @@ def test(group_type, group_object, pk_length, sk_length):
 
 def main() -> int:
     # HEISENBERG GROUP
-    # Note: let n be odd, R be prime
-    hg = HeisenbergGroup(n=Integer(5), R=Integer(7))
-    return test(HeisenbergGroup, hg, 1, 1)
+    # Note: let n be odd
+    hg = HeisenbergGroup(n=Integer(5), R=Integer(sys.maxsize))
+    return test(HeisenbergGroup, hg, 27, 17)
 
     # # PERMUTATION GROUP
     # pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
@@ -82,7 +78,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    tests = 10
+    tests = 1
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")
