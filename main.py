@@ -59,12 +59,12 @@ def test(group_type, group_object, pk_length, sk_length):
     elapsed = str(timedelta(seconds=((endTime - startTime))))
     print("\nTime:", elapsed)
 
-    return (aliceSharedKey == bobSharedKey)
+    return (aliceSharedKey == bobSharedKey == alice.oracle(bob))
 
 def main() -> int:
     # HEISENBERG GROUP
     # Note: let n be odd, R be prime
-    hg = HeisenbergGroup(n=Integer(5), R=Integer(101))
+    hg = HeisenbergGroup(n=Integer(5), R=Integer(7))
     return test(HeisenbergGroup, hg, 1, 1)
 
     # # PERMUTATION GROUP
@@ -72,8 +72,8 @@ def main() -> int:
     # return test(PermutationGroup, pg, 23, 13)
 
     # # RUBIK'S CUBE GROUP
-    # rg = CubeGroup()
-    # return test(CubeGroup, rg, 11, 7)
+    #rg = CubeGroup()
+    #return test(CubeGroup, rg, 11, 7)
 
     # # BRAID GROUP # BROKEN
     # bg = BraidGroup(names=("a","b","c"))
@@ -82,7 +82,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    tests = 1
+    tests = 10
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")

@@ -35,18 +35,7 @@ class AAGExchangeObject(Generic[T]):
 
         pk: set = set()
         while len(pk) < length:
-            print("0.0") # debug
-            n = 5 + 2
-            R = 101
-            H = matrix(ZZ, n, n, lambda i,j: 1 if i == j else 0)
-            for i in range(1, n-1):
-                H[0,i] = random.randint(0, R)
-                H[i,n-1] = random.randint(0, R)
-            H[0,n-1] = random.randint(0, R)
-
-            pk.add(self.G.Element(self.G, H))
-
-            # pk.add(self.G.random_element()) # very slow for large groups
+            pk.add(self.G.random_element()) # very slow for large groups
             print("0.x") # debug
 
         self._publicKey = list(pk)
@@ -76,6 +65,15 @@ class AAGExchangeObject(Generic[T]):
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
+
+    def oracle(self, otherExchangeObject):
+        # Returns the correct shared key. This is only used for testing purposes.
+
+        # Compute A * B
+        AB = self._privateKey * otherExchangeObject._privateKey
+
+        # Compute Ai * Bi * A * B
+        return self._privateKey.inverse() * otherExchangeObject._privateKey.inverse() * AB
 
     def transition(self, otherExchangeObject) -> list:
         assert self._publicKey != None
