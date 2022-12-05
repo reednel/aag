@@ -3,7 +3,7 @@ from sage.all import Integer
 from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 from sage.groups.perm_gps.permgroup import PermutationGroup
 from sage.groups.perm_gps.cubegroup import CubeGroup
-# from sage.groups.braid import BraidGroup
+from sage.groups.braid import BraidGroup
 
 from aag import AAGExchangeObject
 
@@ -58,10 +58,10 @@ def test(group_type, group_object, pk_length, sk_length):
     return (aliceSharedKey == bobSharedKey == alice.oracle(bob))
 
 def main() -> int:
-    # HEISENBERG GROUP
-    # Note: let n be odd
-    hg = HeisenbergGroup(n=Integer(5), R=Integer(sys.maxsize))
-    return test(HeisenbergGroup, hg, 27, 17)
+    # # HEISENBERG GROUP
+    # # Note: let n be odd
+    # hg = HeisenbergGroup(n=Integer(5), R=Integer(sys.maxsize))
+    # return test(HeisenbergGroup, hg, 27, 17)
 
     # # PERMUTATION GROUP
     # pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
@@ -71,10 +71,9 @@ def main() -> int:
     #rg = CubeGroup()
     #return test(CubeGroup, rg, 11, 7)
 
-    # # BRAID GROUP # BROKEN
-    # bg = BraidGroup(names=("a","b","c"))
-    # bg.random_element() # DEBUG
-    # return test(BraidGroup, bg, 11, 7)
+    # BRAID GROUP # BROKEN
+    bg = BraidGroup(names=("a","b","c","d","e"))
+    return test(BraidGroup, bg, 11, 7)
 
 
 if __name__ == "__main__":

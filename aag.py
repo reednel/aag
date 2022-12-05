@@ -40,10 +40,18 @@ class AAGExchangeObject(Generic[T]):
         g = self.G.Element(self.G, H, check=False) # Need check=false to circumvent O(|G|) check
         return g
 
-    # def random_element_B(self, names):
-    #     B =
-    #     g = self.G.Element(self.G, B, check=False) # Need check=false to circumvent O(|G|) check
-    #     return g
+    def random_element_B(self, n):
+
+        def getrand(n):
+            while True:
+                v = random.randint(0 - n, n)
+                if v != 0:
+                    return v
+
+        B = [getrand(n) for _ in range(10)]
+
+        g = self.G.Element(self.G, B, check=False)
+        return g
 
     def generatePublicKey(self, length: int) -> None:
         assert length > 0
@@ -52,7 +60,8 @@ class AAGExchangeObject(Generic[T]):
         pk: set = set()
         while len(pk) < length:
             # g = self.G.random_element() # very slow for large groups
-            g = self.random_element_H(5, sys.maxsize)
+            # g = self.random_element_H(5, sys.maxsize)
+            g = self.random_element_B(4)
             pk.add(g)
 
         self._publicKey = list(pk)
