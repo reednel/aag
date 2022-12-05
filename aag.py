@@ -1,6 +1,5 @@
 from sage.all import *
 from sage.groups.group import Group
-from sage.sets.set import Set
 from typing import TypeVar, Generic
 from functools import reduce
 import random
@@ -36,7 +35,19 @@ class AAGExchangeObject(Generic[T]):
 
         pk: set = set()
         while len(pk) < length:
-            pk.add(self.G.random_element())
+            print("0.0") # debug
+            n = 5 + 2
+            R = 101
+            H = matrix(ZZ, n, n, lambda i,j: 1 if i == j else 0)
+            for i in range(1, n-1):
+                H[0,i] = random.randint(0, R)
+                H[i,n-1] = random.randint(0, R)
+            H[0,n-1] = random.randint(0, R)
+
+            pk.add(self.G.Element(self.G, H))
+
+            # pk.add(self.G.random_element()) # very slow for large groups
+            print("0.x") # debug
 
         self._publicKey = list(pk)
 
@@ -76,7 +87,7 @@ class AAGExchangeObject(Generic[T]):
         Ai = A.inverse() # Inverse of Alice's private key
 
         # Wikipedia calls this the "transition"
-        AiBA: list = [A * b * Ai for b in B] # should contain the value of Ai * B * A
+        AiBA: list = [Ai * b * A for b in B] # should contain the value of Ai * B * A
 
         return AiBA
 
@@ -111,29 +122,24 @@ class AAGExchangeObject(Generic[T]):
         # THIS MULTIPLICATION IS BAD AND I CAN'T FATHOM WHY
         Ka = Ai * a_prime_s_prod
 
-        print("Ai type:", type(Ai))
-        print("apsp type:", type(a_prime_s_prod))
-        print("Ka type:", type(Ka))
-
-        # DEBUG
-        # [actual] - [correct]
-        if (first):
-            print("A:     ", A, "- (1,2,5)(3,4)")
-            print("Ai:    ", Ai, "- (1,5,2)(3,4)")
-            print("BiAB:  ", a_prime, "- [(1,2,4), (3,4), (1,4,5)(2,3)]")
-            print("a'_s:  ", a_prime_s, "- [(1,4,5)(2,3)]")
-            print("a'_s X:", a_prime_s_prod, "- (1,4,5)(2,3)")
-            print("AiBiAB:", Ka, "- (1,3)(2,4)")
-            print("")
-        else:
-            print("B:     ", A, "- (1,2,4,5)")
-            print("Bi:    ", Ai, "- (1,5,4,2)")
-            print("AiBA:  ", a_prime, "- [(2,5,3,4), (1,5,2,3), (1,3,2,5,4)]")
-            print("b'_s:  ", a_prime_s, "- [(1,3,2,5)]")
-            print("b'_s X:", a_prime_s_prod, "- (1,3,2,5)")
-            print("BiAiBA:", Ka, "- (1,3)(2,4)")
-            print("AiBiAB:", Ka.inverse(), "- (1,3)(2,4)")
-            print("")
+        # # DEBUG
+        # if first:
+        #     print("A:     ", A)
+        #     print("Ai:    ", Ai)
+        #     print("BiAB:  ", a_prime)
+        #     print("a'_s:  ", a_prime_s)
+        #     print("a'_s X:", a_prime_s_prod)
+        #     print("AiBiAB:", Ka)
+        #     print("")
+        # else:
+        #     print("B:     ", A)
+        #     print("Bi:    ", Ai)
+        #     print("AiBA:  ", a_prime)
+        #     print("b'_s:  ", a_prime_s)
+        #     print("b'_s X:", a_prime_s_prod)
+        #     print("BiAiBA:", Ka)
+        #     print("AiBiAB:", Ka.inverse())
+        #     print("")
 
         if first: # Alice
             return Ka

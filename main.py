@@ -4,7 +4,6 @@ from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
 from sage.groups.perm_gps.permgroup import PermutationGroup
 from sage.groups.perm_gps.cubegroup import CubeGroup
 # from sage.groups.braid import BraidGroup
-# from sage.groups.matrix_gps.linear import GL
 
 from aag import AAGExchangeObject
 
@@ -22,20 +21,24 @@ def test(group_type, group_object, pk_length, sk_length):
 
     # choose random subset of bg to be publicKey
     alice.generatePublicKey(pk_length)
+    print("1") # debug
     bob.generatePublicKey(pk_length)
+    print("1") # debug
 
     # choose random subset-permutation of each publicKey to be privateKey
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
+    print("2") # debug
 
-    # DEBUG
-    alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
-    bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
-    alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
-    bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
+    # # Keep for future debugging
+    # alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
+    # bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
+    # alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
+    # bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
+    print("3") # debug
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     print("---------- ALICE ----------")
@@ -52,12 +55,6 @@ def test(group_type, group_object, pk_length, sk_length):
     print("-")
     print(bobSharedKey)
 
-    # If the key is a list, uncomment these lines to print Alice's and Bob's side by side
-    #for a, b in zip(aliceSharedKey, bobSharedKey):
-    #    ast = str(a).replace('\n','')
-    #    bst = str(b).replace('\n','')
-    #    print(f"Alice has {ast}, Bob has {bst}")
-
     endTime = time.time()
     elapsed = str(timedelta(seconds=((endTime - startTime))))
     print("\nTime:", elapsed)
@@ -65,16 +62,16 @@ def test(group_type, group_object, pk_length, sk_length):
     return (aliceSharedKey == bobSharedKey)
 
 def main() -> int:
-    # # HEISENBERG GROUP
-    # # Note: let n be odd, R be prime
-    # hg = HeisenbergGroup(n=Integer(3), R=Integer(7))
-    # return test(HeisenbergGroup, hg, 23, 13)
+    # HEISENBERG GROUP
+    # Note: let n be odd, R be prime
+    hg = HeisenbergGroup(n=Integer(5), R=Integer(101))
+    return test(HeisenbergGroup, hg, 1, 1)
 
-    # Permutation Group
-    pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
-    return test(PermutationGroup, pg, 3, 1)
+    # # PERMUTATION GROUP
+    # pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
+    # return test(PermutationGroup, pg, 23, 13)
 
-    # # Rubik's Cube Group
+    # # RUBIK'S CUBE GROUP
     # rg = CubeGroup()
     # return test(CubeGroup, rg, 11, 7)
 
@@ -82,10 +79,6 @@ def main() -> int:
     # bg = BraidGroup(names=("a","b","c"))
     # bg.random_element() # DEBUG
     # return test(BraidGroup, bg, 11, 7)
-
-    # # LINEAR MATRIX GROUP # BROKEN
-    # mg = GL(Integer(3), ZZ)
-    # return test(GL, mg, 11, 7)
 
 
 if __name__ == "__main__":
