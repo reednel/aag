@@ -4,6 +4,11 @@ from typing import TypeVar, Generic
 from functools import reduce
 import random
 
+from sage.groups.matrix_gps.heisenberg import HeisenbergGroup
+from sage.groups.perm_gps.permgroup import PermutationGroup
+from sage.groups.perm_gps.cubegroup import CubeGroup
+from sage.groups.braid import BraidGroup_class
+
 T = TypeVar('T', bound=Group)
 
 class AAGExchangeObject(Generic[T]):
@@ -59,9 +64,13 @@ class AAGExchangeObject(Generic[T]):
 
         pk: set = set()
         while len(pk) < length:
-            # g = self.G.random_element() # very slow for large groups
-            # g = self.random_element_H(5, sys.maxsize)
-            g = self.random_element_B(4)
+            if isinstance(self.G, HeisenbergGroup):
+                g = self.random_element_H(self.G._n, len(self.G._ring))
+            elif isinstance(self.G, BraidGroup_class):
+                g = self.random_element_B(self.G.strands()-1)
+            else:
+                g = self.G.random_element() # very slow for large groups
+
             pk.add(g)
 
         self._publicKey = list(pk)
@@ -87,7 +96,7 @@ class AAGExchangeObject(Generic[T]):
         # private key is ordered product of chosen elements
         self._privateKey = reduce(lambda x, y: x * y, sk)
         assert self._privateKey in self.G
-        assert self._privateKey != self.G.one() # might be a problem once in a while, TODO delete when bug fixed
+        # assert self._privateKey != self.G.one() # might be a problem once in a while, TODO delete when bug fixed
 
     def __repr__(self) -> str:
         return f"Public Key: {self._publicKey} (Private Key: {self._privateKey})" # TODO: remove private key from repr
