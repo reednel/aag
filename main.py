@@ -28,26 +28,22 @@ def test(group_type, group_object, pk_length, sk_length):
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
 
-    # Keep for future debugging
-    alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
-    bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
-    alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
-    bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
+    # # Keep for future debugging
+    # alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
+    # bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
+    # alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
+    # bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     print("---------- ALICE ----------")
-    # print(alice.publicKey)
-    # print("-")
     print(alice._privateKey)
     print("-")
     print(aliceSharedKey)
 
     print("---------- BOB ----------")
-    # print(bob.publicKey)
-    # print("-")
     print(bob._privateKey)
     print("-")
     print(bobSharedKey)
@@ -56,10 +52,10 @@ def test(group_type, group_object, pk_length, sk_length):
     elapsed = str(timedelta(seconds=((endTime - startTime))))
     print("\nTime:", elapsed)
 
-    bfSharedKey = bruteforce(alice.publicKey, sk_length, alice.transition(bob), bob.transition(alice))
-    print(bfSharedKey)
+    # Attack
+    bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, alice.transition(bob), bob.transition(alice))
 
-    return (aliceSharedKey == bobSharedKey == alice.oracle(bob))
+    return (aliceSharedKey == bobSharedKey == bfSharedKey == alice.oracle(bob))
 
 def main() -> int:
     # # HEISENBERG GROUP
@@ -69,7 +65,7 @@ def main() -> int:
 
     # PERMUTATION GROUP
     pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
-    return test(PermutationGroup, pg, 3, 1)
+    return test(PermutationGroup, pg, 7, 5)
 
     # # RUBIK'S CUBE GROUP
     #rg = CubeGroup()
@@ -81,7 +77,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    tests = 1
+    tests = 10
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")
