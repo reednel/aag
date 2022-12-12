@@ -13,6 +13,8 @@ from datetime import timedelta
 import matplotlib.pyplot as plt
 import numpy as np
 
+from tqdm import tqdm
+
 def timing(group_type, group_object, pk_length, sk_length):
 
     alice = AAGExchangeObject[group_type](group_object)
@@ -41,10 +43,10 @@ def timing(group_type, group_object, pk_length, sk_length):
 
 def generate_permutation():
     counter = 0.00
-    public = [10,20,30,40,50]
-    private = [10,20,30,40,50]
-    constant_public = 60
-    constant_private =  10
+    public = [10,20]
+    private = [10,20]
+    constant_public = 30
+    constant_private = 10
     pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
     #pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, 23, 13)
 
@@ -57,22 +59,21 @@ def generate_permutation():
     #pg2XPlot = pg2ExchangeTime.microseconds + 3
     #pg2YPlot = pg2AttackTime.microseconds + 3
 
+    NUMBER_OF_POINTS = 200
+
     arr = np.array([[0,0,0,0]])
     for pub in public:
-        for i in range(20):
+        for i in tqdm(range(NUMBER_OF_POINTS)):
             pg2 = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
             pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
             counter = counter + 1
-            print(arr)
-            print(counter / 300.00, '% done', sep='')
     for priv in private:
-        for i in range(20):
+        for i in tqdm(range(NUMBER_OF_POINTS)):
             pg2 = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
             pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
-            counter = counter + 1
-            print(counter / 300.00, '% done', sep='')
+
     print(arr)
     arr.tofile('AttackExchangeData.csv', sep = ',')
 
@@ -131,8 +132,8 @@ def generate_braid():
 def main():
     # hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
 
-    #generate_permutation()
-    generate_braid()
+    generate_permutation()
+    #generate_braid()
 
         #plt.scatter(pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, s=30, c='red')
     # bg = BraidGroup(5)
