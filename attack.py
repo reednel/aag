@@ -45,8 +45,9 @@ def bruteforce(abar, bbar, n, AiBA, BiAB):
     K = A.inverse() * B.inverse() * A * B
 
     endTime = time.time()
+    totalTime = timedelta(seconds=((endTime - startTime)))
     elapsed = str(timedelta(seconds=((endTime - startTime))))
     print("Bruteforced key:", K)
     print("Bruteforced in:", elapsed)
 
-    return K
+    return K, totalTime
