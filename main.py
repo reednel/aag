@@ -6,6 +6,7 @@ from sage.groups.perm_gps.cubegroup import CubeGroup
 from sage.groups.braid import BraidGroup
 
 from aag import AAGExchangeObject
+from attack import bruteforce
 
 import itertools
 import random
@@ -38,15 +39,11 @@ def test(group_type, group_object, pk_length, sk_length):
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     print("---------- ALICE ----------")
-    # print(alice.publicKey)
-    # print("-")
     print(alice._privateKey)
     print("-")
     print(aliceSharedKey)
 
     print("---------- BOB ----------")
-    # print(bob.publicKey)
-    # print("-")
     print(bob._privateKey)
     print("-")
     print(bobSharedKey)
@@ -55,7 +52,10 @@ def test(group_type, group_object, pk_length, sk_length):
     elapsed = str(timedelta(seconds=((endTime - startTime))))
     print("\nTime:", elapsed)
 
-    return (aliceSharedKey == bobSharedKey == alice.oracle(bob))
+    # Attack
+    bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, alice.transition(bob), bob.transition(alice))
+
+    return (aliceSharedKey == bobSharedKey == bfSharedKey == alice.oracle(bob))
 
 def main() -> int:
     # # HEISENBERG GROUP
@@ -63,21 +63,21 @@ def main() -> int:
     # hg = HeisenbergGroup(n=Integer(5), R=Integer(sys.maxsize))
     # return test(HeisenbergGroup, hg, 27, 17)
 
-    # # PERMUTATION GROUP
-    # pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
-    # return test(PermutationGroup, pg, 23, 13)
+    # PERMUTATION GROUP
+    pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
+    return test(PermutationGroup, pg, 7, 5)
 
     # # RUBIK'S CUBE GROUP
     #rg = CubeGroup()
     #return test(CubeGroup, rg, 11, 7)
 
-    # BRAID GROUP # BROKEN
-    bg = BraidGroup(names=("a","b","c","d","e"))
-    return test(BraidGroup, bg, 11, 7)
+    # # BRAID GROUP # BROKEN
+    # bg = BraidGroup(names=("a","b","c","d","e"))
+    # return test(BraidGroup, bg, 11, 7)
 
 
 if __name__ == "__main__":
-    tests = 1
+    tests = 10
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")
