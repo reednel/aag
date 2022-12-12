@@ -60,24 +60,24 @@ def test(group_type, group_object, pk_length, sk_length):
 def main() -> int:
     # # HEISENBERG GROUP
     # # Note: let n be odd
-    # hg = HeisenbergGroup(n=Integer(5), R=Integer(sys.maxsize))
-    # return test(HeisenbergGroup, hg, 27, 17)
+    # hg = HeisenbergGroup(n=Integer(3), R=Integer(sys.maxsize))
+    # return test(HeisenbergGroup, hg, 3, 3)
 
     # PERMUTATION GROUP
-    pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
-    return test(PermutationGroup, pg, 7, 5)
+    pg = PermutationGroup([[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]])
+    return test(PermutationGroup, pg, 10, 10)
 
     # # RUBIK'S CUBE GROUP
     #rg = CubeGroup()
     #return test(CubeGroup, rg, 11, 7)
 
-    # # BRAID GROUP # BROKEN
+    # # BRAID GROUP
     # bg = BraidGroup(names=("a","b","c","d","e"))
     # return test(BraidGroup, bg, 11, 7)
 
 
 if __name__ == "__main__":
-    tests = 10
+    tests = 1
     successes = [0 for i in range(tests)]
     for i in range(tests):
         print(f"---------- ITERATION {i} (random seed = {i}) ----------")
