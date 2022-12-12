@@ -34,9 +34,26 @@ def pause():
     tmp = input()
     if tmp == 'q':
         exit()
+    elif tmp == 'f':
+        os.system('clear')
+        print("""
+        Here we have demonstrated a generic implementation of the AAG protocol that can work
+        with any group. We have shown implementations for...
+
+        • The Heisenberg group, of upper-triangular matrices of a certain form
+
+        • Arbitrary permutation groups
+
+        • The braid group, with an arbitrary number of strands
+
+        • The Rubik's cube group
+
+        Our paper will focus on comparing the performance of the AAG protocol between these groups.""")
+        pause()
+        exit()
+
 
 def animate(group_type, group_object, pk_length, sk_length):
-
     startTime = time.time()
 
     alice = AAGExchangeObject[group_type](group_object)
@@ -49,12 +66,6 @@ def animate(group_type, group_object, pk_length, sk_length):
     # choose random subset-permutation of each publicKey to be privateKey
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
-
-    # # Keep for future debugging
-    # alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
-    # bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
-    # alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
-    # bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
 
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
@@ -83,6 +94,7 @@ def animate(group_type, group_object, pk_length, sk_length):
     backward_foxsay("Let's use the Anshel-Anshel-Goldfeld key exchange protocol. I'll be Alice, you are Bob.")
 
     pause()
+    os.system('clear')
 
     # print(alice.publicKey)
     backward_foxsay(f"ALICE's PUBLIC SET\nI chose {len(alice.publicKey)} elements from {group_object} as my public set.")
@@ -109,7 +121,7 @@ def animate(group_type, group_object, pk_length, sk_length):
     cowsay.cow("""
     Okay, I do the same thing:
      • My pk = subset of G
-     • My sk = product of a sub-permutation of G
+     • My sk = product of ordered subset of pk
     """)
 
     pause()
@@ -159,6 +171,49 @@ def animate(group_type, group_object, pk_length, sk_length):
 
     return (aliceSharedKey == bobSharedKey and aliceSharedKey == alice.oracle(bob))
 
+def demo_without_animation(group_type, group_object, pk_length, sk_length):
+    startTime = time.time()
+
+    alice = AAGExchangeObject[group_type](group_object)
+    bob = AAGExchangeObject[group_type](group_object)
+
+    # choose random subset of bg to be publicKey
+    alice.generatePublicKey(pk_length)
+    bob.generatePublicKey(pk_length)
+
+    # choose random subset-permutation of each publicKey to be privateKey
+    alice.generatePrivateKey(sk_length)
+    bob.generatePrivateKey(sk_length)
+
+    # derive shared key
+    aliceSharedKey = alice.deriveSharedKey(True, bob)
+    bobSharedKey = bob.deriveSharedKey(False, alice)
+    
+    endTime = time.time()
+
+    os.system('clear')
+    print(f"G = {group_object}")
+    sleep(0.1)
+    print(f"\nAlice's public key is a subset of G of size {pk_length}")
+    print(f"\nAlice's private key: {alice._privateKey}")
+    sleep(0.1)
+    print(f"\nBob's public key is a subset of G of size {pk_length}")
+    print(f"\nBob's private key: {bob._privateKey}")
+    sleep(0.1)
+    #print(f"Bob computes a transition for Alice: {bob.transition(alice)}")
+    #print(f"Alice computes a transition for Bob: {alice.transition(bob)}")
+    print(f"\nAlice's shared key: {aliceSharedKey}")
+    print(f"\nBob's shared key: {bobSharedKey}")
+    sleep(0.1)
+
+    elapsed = str(timedelta(seconds=((endTime - startTime))))
+    print("\nTime:", elapsed)
+
+    pause()
+    os.system('clear')
+
+    return (aliceSharedKey == bobSharedKey == alice.oracle(bob))
+
 def main():
     successes = []
 
@@ -169,37 +224,53 @@ def main():
     hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
     os.system('clear')
 
-    print("> hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))")
-    print(hg)
-    hg_result = test(HeisenbergGroup, hg, 27, 17)
+    hg_result = animate(HeisenbergGroup, hg, 27, 17)
     successes.append(hg_result)
-
-    pause()
-    os.system('clear')
     
     # PERMUTATION GROUP
     pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
-    print(pg)
-    successes.append(test(PermutationGroup, pg, 23, 13))
-
-    pause()
-    os.system('clear')
+    successes.append(demo_without_animation(PermutationGroup, pg, 23, 13))
 
     # BRAID GROUP
     bg = BraidGroup(5)
-    successes.append(test(BraidGroup, bg, 11, 7))
-
-    pause()
-    os.system('clear')
+    successes.append(demo_without_animation(BraidGroup, bg, 11, 7))
 
     # RUBIK'S CUBE GROUP
     rg = CubeGroup()
-    successes.append(test(CubeGroup, rg, 11, 7))
+    successes.append(demo_without_animation(CubeGroup, rg, 11, 7))
+
+    print("""
+    Here we have demonstrated a generic implementation of the AAG protocol that can work
+    with any group. We have shown implementations for...
+
+     • The Heisenberg group, of upper-triangular matrices of a certain form
+
+     • Arbitrary permutation groups
+
+     • The braid group, with an arbitrary number of strands
+
+     • The Rubik's cube group
+
+    Our paper will focus on comparing the performance of the AAG protocol between these groups.""")
 
     pause()
-    os.system('clear')
 
-    #print(f"Success rate: {sum(successes) / len(successes) * 100}%")
+    print("""
+    Thank you for listening! Now you know that you can securely exchange keys with anyone by means of friendship 
+    bracelets or Rubik's cubes, and your enemies will struggle to compromise those keys even using their quantum
+    computers!
+    """)
+
+    cowsay.cow("Bye!")
+    backward_foxsay("Bye!")
+
+    sleep(10)
+
+    cowsay.trex("Bye!")
+
+
+    
+
 
 if __name__ == "__main__":
     main()
