@@ -37,24 +37,38 @@ def timing(group_type, group_object, pk_length, sk_length):
     endExchangeTime = time.time()
     exchangeTime = timedelta(seconds=((endExchangeTime - startExchangeTime)))
 
-    bfSharedKey, attackTime = bruteforce(alice.publicKey, bob.publicKey, sk_length, alice.transition(bob), bob.transition(alice))
+    # Execute bruteforce attack
+    atb = alice.transition(bob)
+    bta = bob.transition(alice)
+    startAttackTime = time.time()
+    bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, atb, bta)
+    endAttackTime = time.time()
+    attackTime = timedelta(seconds=((endAttackTime - startAttackTime)))
+
+    # Check correctness
+    if (not (aliceSharedKey == bobSharedKey == bfSharedKey)):
+        print("RUNTIME ERROR")
+        print("\tAlice's K:", aliceSharedKey)
+        print("\tBob's K  :", bobSharedKey)
+        print("\tEve's K  :", bfSharedKey)
 
     return exchangeTime, attackTime
 
 def generate_permutation():
     counter = 0.00
-    public = [10,20]
-    private = [10,20]
-    constant_public = 30
-    constant_private = 10
-    pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
+    public = [1,2,3,4,5]
+    private = [1,2,3,4,5]
+    constant_public = 5
+    constant_private = 5
+    s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
+    pg = PermutationGroup(s16)
     #pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, 23, 13)
 
     #pgXPlot = pgExchangeTime.microseconds + 3
     #pgYPlot = pgAttackTime.microseconds + 3
 
 
-    pg2 = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
+    pg2 = PermutationGroup(s16)
     #pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, 23, 13)
     #pg2XPlot = pg2ExchangeTime.microseconds + 3
     #pg2YPlot = pg2AttackTime.microseconds + 3
@@ -64,13 +78,13 @@ def generate_permutation():
     arr = np.array([[0,0,0,0]])
     for pub in public:
         for i in tqdm(range(NUMBER_OF_POINTS)):
-            pg2 = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
+            pg2 = PermutationGroup(s16)
             pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
             counter = counter + 1
     for priv in private:
         for i in tqdm(range(NUMBER_OF_POINTS)):
-            pg2 = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]])
+            pg2 = PermutationGroup(s16)
             pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
 

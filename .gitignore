@@ -1,4 +1,7 @@
-# Empty
-# pycache
+
+*.png
+*.jpg
+*.pdf
+
 __pycache__/
 .mypy_cache/

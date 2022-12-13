@@ -53,7 +53,9 @@ def test(group_type, group_object, pk_length, sk_length):
     print("\nTime:", elapsed)
 
     # Attack
-    bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, alice.transition(bob), bob.transition(alice))
+    atb = alice.transition(bob)
+    bta = bob.transition(alice)
+    bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, atb, bta)
 
     return (aliceSharedKey == bobSharedKey == bfSharedKey == alice.oracle(bob))
 
@@ -64,8 +66,9 @@ def main() -> int:
     # return test(HeisenbergGroup, hg, 3, 3)
 
     # PERMUTATION GROUP
-    pg = PermutationGroup([[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]])
-    return test(PermutationGroup, pg, 10, 10)
+    s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
+    pg = PermutationGroup(s16)
+    return test(PermutationGroup, pg, 10, 3)
 
     # # RUBIK'S CUBE GROUP
     #rg = CubeGroup()
