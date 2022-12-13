@@ -141,6 +141,31 @@ def generate_braid():
     print(arr)
     arr.tofile('simulations/braid.csv', sep = ',')
 
+def generate_heisenberg():
+    counter = 0.00
+    public = [10,20,30,40,50]
+    private = [10,20,30,40,50]
+    constant_public = 60
+    constant_private =  10
+    hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
+
+    arr = np.array([[0,0,0,0]])
+    for pub in public:
+        for i in range(3):
+            hgExchangeTime, hgAttackTime = timing(HeisenbergGroup, hg, pub, constant_private)
+            arr = np.append(arr, [[hgExchangeTime.microseconds, hgAttackTime.microseconds, pub, constant_private]], axis=0)
+            counter = counter + 1
+            print(arr)
+            print(counter / 300.00, '% done', sep='')
+    for priv in private:
+        for i in range(3):
+            hgExchangeTime, hgAttackTime = timing(HeisenbergGroup, hg, constant_public, priv)
+            arr = np.append(arr, [[hgExchangeTime.microseconds, hgAttackTime.microseconds, constant_public, priv]], axis=0)
+            counter = counter + 1
+            print(counter / 300.00, '% done', sep='')
+    print(arr)
+    arr.tofile('simulations/braid.csv', sep = ',')
+
 def main():
     # hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
 
