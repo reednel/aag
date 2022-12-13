@@ -91,23 +91,23 @@ def generate_permutation():
 
 def generate_cube():
     counter = 0.00
-    public = [10,20,30,40,50]
-    private = [10,20,30,40,50]
-    constant_public = 60
-    constant_private =  10
+    public = [1,2,3,4,5]
+    private = private = [1,2,3,4,5]
+    constant_public = 10
+    constant_private =  5
     cube = CubeGroup()
 
     arr = np.array([[0,0,0,0]])
-    for pub in public:
-        for i in range(20):
-            cube = CubeGroup()
-            cubeExchangeTime, cubeAttackTime = timing(CubeGroup, cube, pub, constant_private)
-            arr = np.append(arr, [[cubeExchangeTime.microseconds, cubeAttackTime.microseconds, pub, constant_private]], axis=0)
-            counter = counter + 1
-            print(arr)
-            print(counter / 300.00, '% done', sep='')
+    # for pub in public:
+    #     for i in range(20):
+    #         cube = CubeGroup()
+    #         cubeExchangeTime, cubeAttackTime = timing(CubeGroup, cube, pub, constant_private)
+    #         arr = np.append(arr, [[cubeExchangeTime.microseconds, cubeAttackTime.microseconds, pub, constant_private]], axis=0)
+    #         counter = counter + 1
+    #         print(arr)
+    #         print(counter / 300.00, '% done', sep='')
     for priv in private:
-        for i in range(20):
+        for i in range(1):
             cube = CubeGroup()
             cubeExchangeTime, cubeAttackTime = timing(CubeGroup, cube, constant_public, priv)
             arr = np.append(arr, [[cubeExchangeTime.microseconds, cubeAttackTime.microseconds, constant_public, priv]], axis=0)
@@ -169,7 +169,7 @@ def generate_heisenberg():
 def main():
     # hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
 
-    generate_permutation()
+    generate_cube()
     #generate_braid()
 
         #plt.scatter(pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, s=30, c='red')
