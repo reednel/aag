@@ -68,7 +68,12 @@ def main() -> int:
     # PERMUTATION GROUP
     s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
     pg = PermutationGroup(s16)
-    return test(PermutationGroup, pg, 10, 3)
+    return test(PermutationGroup, pg, 10, 4)
+
+    # Running `test(PermutationGroup, pg, 10, 5)`
+    # Reed Macbook:    ~ 40,000 it/s
+    # Reed PC:         ~ 270,000 it/s
+    # Michael Macbook: ~ 880,000 it/s
 
     # # RUBIK'S CUBE GROUP
     #rg = CubeGroup()

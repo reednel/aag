@@ -58,30 +58,28 @@ def generate_permutation():
     counter = 0.00
     public = [1,2,3,4,5]
     private = [1,2,3,4,5]
-    constant_public = 5
+    constant_public = 10
     constant_private = 5
     s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
+
     pg = PermutationGroup(s16)
     #pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, 23, 13)
-
     #pgXPlot = pgExchangeTime.microseconds + 3
     #pgYPlot = pgAttackTime.microseconds + 3
-
-
     pg2 = PermutationGroup(s16)
     #pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, 23, 13)
     #pg2XPlot = pg2ExchangeTime.microseconds + 3
     #pg2YPlot = pg2AttackTime.microseconds + 3
 
-    NUMBER_OF_POINTS = 200
+    NUMBER_OF_POINTS = 1
 
     arr = np.array([[0,0,0,0]])
-    for pub in public:
-        for i in tqdm(range(NUMBER_OF_POINTS)):
-            pg2 = PermutationGroup(s16)
-            pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
-            arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
-            counter = counter + 1
+    # for pub in public:
+    #     for i in tqdm(range(NUMBER_OF_POINTS)):
+    #         pg2 = PermutationGroup(s16)
+    #         pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
+    #         arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
+    #         counter = counter + 1
     for priv in private:
         for i in tqdm(range(NUMBER_OF_POINTS)):
             pg2 = PermutationGroup(s16)
@@ -89,7 +87,7 @@ def generate_permutation():
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
 
     print(arr)
-    arr.tofile('AttackExchangeData.csv', sep = ',')
+    arr.tofile('simulations/permutation.csv', sep = ',')
 
 def generate_cube():
     counter = 0.00
@@ -116,7 +114,7 @@ def generate_cube():
             counter = counter + 1
             print(counter / 300.00, '% done', sep='')
     print(arr)
-    arr.tofile('CubeAttackExchangeData.csv', sep = ',')
+    arr.tofile('simulations/cube.csv', sep = ',')
 
 def generate_braid():
     counter = 0.00
@@ -141,7 +139,7 @@ def generate_braid():
             counter = counter + 1
             print(counter / 300.00, '% done', sep='')
     print(arr)
-    arr.tofile('BraidAttackExchangeData.csv', sep = ',')
+    arr.tofile('simulations/braid.csv', sep = ',')
 
 def main():
     # hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))

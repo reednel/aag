@@ -1,7 +1,5 @@
-from datetime import timedelta
 from functools import reduce
 from itertools import product
-import time
 from tqdm import tqdm
 
 # Extend the given list to include inverses
