@@ -66,8 +66,10 @@ def main() -> int:
     # return test(HeisenbergGroup, hg, 3, 3)
 
     # PERMUTATION GROUP
-    s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
-    pg = PermutationGroup(s16)
+    # Note: a Permutation group with generators of the form (1 2),(1 3),...,(1 n) is a Symmetric group
+    PERMSIZE = 20
+    Sn = [[(0, i)] for i in range(PERMSIZE)]
+    pg = PermutationGroup(Sn)
     return test(PermutationGroup, pg, 10, 5)
 
     # Running `test(PermutationGroup, pg, 10, 5)`
@@ -80,8 +82,9 @@ def main() -> int:
     #return test(CubeGroup, rg, 11, 7)
 
     # # BRAID GROUP
-    # bg = BraidGroup(names=("a","b","c","d","e"))
-    # return test(BraidGroup, bg, 11, 7)
+    # strands = ["s" + str(i) for i in range(80)]
+    # bg = BraidGroup(names=strands)
+    # return test(BraidGroup, bg, 4, 2)
 
 
 if __name__ == "__main__":

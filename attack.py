@@ -13,6 +13,7 @@ def extend(lst) -> list:
     return lst_e
 
 # Solve the Simultaneous Conjugacy Search Problem by brute force
+# The progress bar refelcts percent of key space searched, not percent to completion
 def solve_SCSP(xbar_e, n, ybar, XiYX):
     for x in tqdm( product(xbar_e, repeat=n), desc="Solving SCSP...", total=2*(len(xbar_e)**n)):
         g = reduce(lambda a, b: a * b, x)
