@@ -14,7 +14,7 @@ def extend(lst) -> list:
 
 # Solve the Simultaneous Conjugacy Search Problem by brute force
 def solve_SCSP(xbar_e, n, ybar, XiYX):
-    for x in tqdm( product(xbar_e, repeat=n), desc="Solving SCSP...", total=2*(len(xbar_e)**n)):
+    for x in product(xbar_e, repeat=n):
         g = reduce(lambda a, b: a * b, x)
         conj = True
         for i in range(len(ybar)):
