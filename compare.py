@@ -20,7 +20,7 @@ def timing(group_type, group_object, pk_length, sk_length):
     alice = AAGExchangeObject[group_type](group_object)
     bob = AAGExchangeObject[group_type](group_object)
 
-    startExchangeTime = time.time()
+    startExchangeTime = time.time_ns()
 
     # choose random subset of bg to be publicKey
     alice.generatePublicKey(pk_length)
@@ -34,16 +34,16 @@ def timing(group_type, group_object, pk_length, sk_length):
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
-    endExchangeTime = time.time()
-    exchangeTime = timedelta(seconds=((endExchangeTime - startExchangeTime)))
+    endExchangeTime = time.time_ns()
+    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000
 
     # Execute bruteforce attack
     atb = alice.transition(bob)
     bta = bob.transition(alice)
-    startAttackTime = time.time()
+    startAttackTime = time.time_ns()
     bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, atb, bta)
-    endAttackTime = time.time()
-    attackTime = timedelta(seconds=((endAttackTime - startAttackTime)))
+    endAttackTime = time.time_ns()
+    attackTime = (endAttackTime - startAttackTime) / 1000000
 
     # Check correctness
     if (not (aliceSharedKey == bobSharedKey == bfSharedKey)):
@@ -88,7 +88,7 @@ def generate_permutation():
             pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
             arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
 
-    print(arr)
+    # print(arr)
     arr.tofile('simulations/permutation.csv', sep = ',')
 
 def generate_cube():
@@ -146,51 +146,33 @@ def generate_braid():
 def generate_heisenberg():
     counter = 0.00
     public = [10,20,30,40,50]
-    private = [10,20,30,40,50]
-    constant_public = 60
+    private = [1,2,3,4,5]
+    constant_public = 5
     constant_private =  10
-    hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
+    hg = HeisenbergGroup(n=Integer(3), R=Integer(sys.maxsize))
 
     arr = np.array([[0,0,0,0]])
-    for pub in public:
-        for i in range(3):
-            hgExchangeTime, hgAttackTime = timing(HeisenbergGroup, hg, pub, constant_private)
-            arr = np.append(arr, [[hgExchangeTime.microseconds, hgAttackTime.microseconds, pub, constant_private]], axis=0)
-            counter = counter + 1
-            print(arr)
-            print(counter / 300.00, '% done', sep='')
+    # for pub in public:
+    #     for i in range(3):
+    #         hgExchangeTime, hgAttackTime = timing(HeisenbergGroup, hg, pub, constant_private)
+    #         arr = np.append(arr, [[hgExchangeTime.microseconds, hgAttackTime.microseconds, pub, constant_private]], axis=0)
+    #         counter = counter + 1
+    #         print(arr)
+    #         print(counter / 300.00, '% done', sep='')
     for priv in private:
-        for i in range(3):
+        for _ in range(3):
             hgExchangeTime, hgAttackTime = timing(HeisenbergGroup, hg, constant_public, priv)
-            arr = np.append(arr, [[hgExchangeTime.microseconds, hgAttackTime.microseconds, constant_public, priv]], axis=0)
-            counter = counter + 1
-            print(counter / 300.00, '% done', sep='')
-    print(arr)
-    arr.tofile('simulations/braid.csv', sep = ',')
+            arr = np.append(arr, [[hgExchangeTime, hgAttackTime, constant_public, priv]], axis=0)
+            # counter = counter + 1
+            # print(counter / 300.00, '% done', sep='')
+    # print(arr)
+    arr.tofile('simulations/heisenberg.csv', sep = ',')
 
 def main():
-    # hg = HeisenbergGroup(n=Integer(5), R=Integer(10000))
-
-    #generate_cube()
-    #generate_braid()
-    generate_braid()
-
-        #plt.scatter(pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, s=30, c='red')
-    # bg = BraidGroup(5)
-    # bgExchangeTime, bgAttackTime = timing(BraidGroup, bg, 11, 7)
-
-    # rg = CubeGroup()
-    # rgExchangeTime, rgAttackTime = timing(CubeGroup, rg, 11, 7)
-
-    #plt.scatter(pgExchangeTime.microseconds, pgAttackTime.microseconds, s=30, c='red')
-    #plt.text(pgXPlot, pgYPlot, "Permutation Group")
-    #plt.scatter(pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, s=30, c='red')
-    #plt.title("Permutation Group")
-    #plt.ylabel("Attack Time (μ)")
-    #maybe plot with logorithmic scale
-    #plt.xlabel("Exchange Time (μ)")
-    #plt.savefig("test.png", format='png')
-
+    # generate_permutation()
+    # generate_cube()
+    # generate_braid()
+    generate_heisenberg()
 
 
 if __name__ == "__main__":

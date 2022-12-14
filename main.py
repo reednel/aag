@@ -15,10 +15,10 @@ from datetime import timedelta
 
 def test(group_type, group_object, pk_length, sk_length):
 
-    startTime = time.time()
-
     alice = AAGExchangeObject[group_type](group_object)
     bob = AAGExchangeObject[group_type](group_object)
+
+    startTime = time.time()
 
     # choose random subset of bg to be publicKey
     alice.generatePublicKey(pk_length)
@@ -38,19 +38,14 @@ def test(group_type, group_object, pk_length, sk_length):
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
-    print("---------- ALICE ----------")
-    print(alice._privateKey)
-    print("-")
-    print(aliceSharedKey)
-
-    print("---------- BOB ----------")
-    print(bob._privateKey)
-    print("-")
-    print(bobSharedKey)
+    # print("ALICE:")
+    # print(aliceSharedKey)
+    # print("BOB:")
+    # print(bobSharedKey)
 
     endTime = time.time()
     elapsed = str(timedelta(seconds=((endTime - startTime))))
-    print("\nTime:", elapsed)
+    print("Exchange Time:", elapsed)
 
     # Attack
     atb = alice.transition(bob)
@@ -66,20 +61,15 @@ def main() -> int:
     # return test(HeisenbergGroup, hg, 3, 3)
 
     # PERMUTATION GROUP
-    # Note: a Permutation group with generators of the form (1 2),(1 3),...,(1 n) is a Symmetric group
-    PERMSIZE = 20
+    # Note: a Permutation group with generators of the form (1 2),(1 3),...,(1 n) is the Symmetric group S_n
+    PERMSIZE = 16
     Sn = [[(0, i)] for i in range(PERMSIZE)]
     pg = PermutationGroup(Sn)
     return test(PermutationGroup, pg, 10, 5)
 
-    # Running `test(PermutationGroup, pg, 10, 5)`
-    # Reed Macbook:    ~ 40,000 it/s
-    # Reed PC:         ~ 270,000 it/s
-    # Michael Macbook: ~ 880,000 it/s
-
     # # RUBIK'S CUBE GROUP
-    #rg = CubeGroup()
-    #return test(CubeGroup, rg, 11, 7)
+    # rg = CubeGroup()
+    # return test(CubeGroup, rg, 11, 7)
 
     # # BRAID GROUP
     # strands = ["s" + str(i) for i in range(80)]
@@ -88,10 +78,10 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    tests = 1
+    tests = 5
     successes = [0 for i in range(tests)]
     for i in range(tests):
-        print(f"---------- ITERATION {i} (random seed = {i}) ----------")
+        print(f"\n---------- ITERATION {i} (random seed = {i}) ----------")
         random.seed(i)
         success = main()
         successes[i] = success

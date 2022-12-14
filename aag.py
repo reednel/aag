@@ -67,7 +67,7 @@ class AAGExchangeObject(Generic[T]):
         assert length > 0
         assert self.G.order() >= length
 
-        pk: set = set()
+        pk = []
         while len(pk) < length:
             if isinstance(self.G, HeisenbergGroup):
                 g = self.random_element_H(self.G._n, len(self.G._ring))
@@ -76,7 +76,11 @@ class AAGExchangeObject(Generic[T]):
             else:
                 g = self.G.random_element() # very slow for large groups
 
-            pk.add(g)
+            # For consistency, disallow duplicates and inverses in the pk
+            if (g in pk or g.inverse() in pk):
+                continue
+
+            pk.append(g)
 
         self._publicKey = list(pk)
 
@@ -137,7 +141,7 @@ class AAGExchangeObject(Generic[T]):
         A = self._privateKey # Alice's private key
         Ai = A.inverse() # Inverse of Alice's private key
 
-        # transition
+        # Transition
         # a_prime = B^-1 * a_bar * B, that is, it contains conjugates of all
         # elements of Alice's public set a_bar
         a_prime: list = otherExchangeObject.transition(self) # B^-1 * a_bar * B
@@ -155,7 +159,6 @@ class AAGExchangeObject(Generic[T]):
 
         a_prime_s_prod = reduce(lambda x, y: x * y, a_prime_s)
 
-        # THIS MULTIPLICATION IS BAD AND I CAN'T FATHOM WHY
         Ka = Ai * a_prime_s_prod
 
         # # DEBUG
