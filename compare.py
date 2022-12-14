@@ -56,7 +56,7 @@ def timing(group_type, group_object, pk_length, sk_length):
 
 def generate_permutation():
     counter = 0.00
-    public = [1,2,3,4,5]
+    public = [6,7,8,9,10]
     private = [1,2,3,4,5]
     constant_public = 10
     constant_private = 5
@@ -71,20 +71,19 @@ def generate_permutation():
     #pg2XPlot = pg2ExchangeTime.microseconds + 3
     #pg2YPlot = pg2AttackTime.microseconds + 3
 
-    NUMBER_OF_POINTS = 1
+    NUMBER_OF_POINTS = 100
 
     arr = np.array([[0,0,0,0]])
-    # for pub in public:
-    #     for i in tqdm(range(NUMBER_OF_POINTS)):
-    #         pg2 = PermutationGroup(s16)
-    #         pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
-    #         arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
-    #         counter = counter + 1
-    for priv in private:
+    for pub in public:
         for i in tqdm(range(NUMBER_OF_POINTS)):
             pg2 = PermutationGroup(s16)
-            pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
-            arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
+            pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
+            arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
+    #for priv in private:
+    #    for i in tqdm(range(NUMBER_OF_POINTS)):
+    #        pg2 = PermutationGroup(s16)
+    #        pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
+    #        arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
 
     print(arr)
     arr.tofile('simulations/permutation.csv', sep = ',')
