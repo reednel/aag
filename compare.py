@@ -15,6 +15,8 @@ import numpy as np
 
 from tqdm import tqdm
 
+import csv
+
 def timing(group_type, group_object, pk_length, sk_length):
 
     alice = AAGExchangeObject[group_type](group_object)
@@ -55,41 +57,24 @@ def timing(group_type, group_object, pk_length, sk_length):
     return exchangeTime, attackTime
 
 def generate_permutation():
-    counter = 0.00
-    public = [1,2,3,4,5]
-    private = [1,2,3,4,5]
-    constant_public = 10
-    constant_private = 5
+    key_sizes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
 
-    PERMSIZE = 16
-    Sn = [[(0, i)] for i in range(PERMSIZE)]
+    pg = PermutationGroup(s16)
 
-    pg = PermutationGroup(Sn)
-    #pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, 23, 13)
-    #pgXPlot = pgExchangeTime.microseconds + 3
-    #pgYPlot = pgAttackTime.microseconds + 3
-    pg2 = PermutationGroup(Sn)
-    #pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, 23, 13)
-    #pg2XPlot = pg2ExchangeTime.microseconds + 3
-    #pg2YPlot = pg2AttackTime.microseconds + 3
+    NUMBER_OF_POINTS = 100
 
-    NUMBER_OF_POINTS = 1
+    with open('simulations/permutation_all.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["pk", "sk", "exchange", "attack"])
 
-    arr = np.array([[0,0,0,0]])
-    # for pub in public:
-    #     for i in tqdm(range(NUMBER_OF_POINTS)):
-    #         pg2 = PermutationGroup(s16)
-    #         pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, pub, constant_private)
-    #         arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, pub, constant_private]], axis=0)
-    #         counter = counter + 1
-    for priv in private:
-        for i in tqdm(range(NUMBER_OF_POINTS)):
-            pg2 = PermutationGroup(Sn)
-            pg2ExchangeTime, pg2AttackTime = timing(PermutationGroup, pg2, constant_public, priv)
-            arr = np.append(arr, [[pg2ExchangeTime.microseconds, pg2AttackTime.microseconds, constant_public, priv]], axis=0)
-
-    # print(arr)
-    arr.tofile('simulations/permutation.csv', sep = ',')
+        for pub in tqdm(key_sizes, desc='Public', position=0):
+            for priv in tqdm(range(1, pub), desc='Private', leave=False, position=1):
+                if pub >= priv:
+                    for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
+                        pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, pub, priv)
+                        writer.writerow([pub, priv, pgExchangeTime.microseconds, pgAttackTime.microseconds])
+                        f.flush()
 
 def generate_cube():
     counter = 0.00
