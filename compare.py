@@ -8,9 +8,7 @@ from sage.groups.braid import BraidGroup
 from aag import AAGExchangeObject
 from attack import bruteforce
 import time
-from datetime import timedelta
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from tqdm import tqdm
@@ -57,23 +55,23 @@ def timing(group_type, group_object, pk_length, sk_length):
     return exchangeTime, attackTime
 
 def generate_permutation():
-    key_sizes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    s16 = [[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]]
+    key_sizes = [1,2,3,4,5]
+    PERMSIZE = 16
+    Sn = [[(0, i)] for i in range(PERMSIZE)]
+    pg = PermutationGroup(Sn)
 
-    pg = PermutationGroup(s16)
+    NUMBER_OF_POINTS = 3
 
-    NUMBER_OF_POINTS = 100
-
-    with open('simulations/permutation_all.csv', 'w', newline='') as f:
+    with open('simulations/permutation.csv', 'w', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow(["pk", "sk", "exchange", "attack"])
+        # writer.writerow(["pk", "sk", "exchange", "attack"])
 
         for pub in tqdm(key_sizes, desc='Public', position=0):
             for priv in tqdm(range(1, pub), desc='Private', leave=False, position=1):
                 if pub >= priv:
                     for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
-                        pgExchangeTime, pgAttackTime = timing(PermutationGroup, pg, pub, priv)
-                        writer.writerow([pub, priv, pgExchangeTime.microseconds, pgAttackTime.microseconds])
+                        exchangeTime, attackTime = timing(PermutationGroup, pg, pub, priv)
+                        writer.writerow([pub, priv, exchangeTime, attackTime])
                         f.flush()
 
 def generate_cube():
@@ -154,10 +152,10 @@ def generate_heisenberg():
     arr.tofile('simulations/heisenberg.csv', sep = ',')
 
 def main():
-    # generate_permutation()
+    generate_permutation()
     # generate_cube()
     # generate_braid()
-    generate_heisenberg()
+    # generate_heisenberg()
 
 
 if __name__ == "__main__":

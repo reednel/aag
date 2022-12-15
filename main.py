@@ -8,44 +8,32 @@ from sage.groups.braid import BraidGroup
 from aag import AAGExchangeObject
 from attack import bruteforce
 
-import itertools
 import random
 import time
-from datetime import timedelta
 
 def test(group_type, group_object, pk_length, sk_length):
 
+    # Set up exchange objects (fixing the platform)
     alice = AAGExchangeObject[group_type](group_object)
     bob = AAGExchangeObject[group_type](group_object)
 
-    startTime = time.time()
+    startExchangeTime = time.time()
 
-    # choose random subset of bg to be publicKey
+    # Choose public keys
     alice.generatePublicKey(pk_length)
     bob.generatePublicKey(pk_length)
 
-    # choose random subset-permutation of each publicKey to be privateKey
+    # Choose private keys
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
 
-    # # Keep for future debugging
-    # alice.publicKey = [PermutationGroupElement([(2,4,5)]), PermutationGroupElement([(3,5)]), PermutationGroupElement([(1,2,5),(3,4)])]
-    # bob.publicKey = [PermutationGroupElement([(1,4,3,5)]), PermutationGroupElement([(1,5,4,2)]), PermutationGroupElement([(1,3,2,4,5)])]
-    # alice.setPrivateKey(PermutationGroupElement([(1,2,5),(3,4)]))
-    # bob.setPrivateKey(PermutationGroupElement([(1,2,4,5)]))
-
-    # derive shared key
+    # Derive shared keys
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
-    # print("ALICE:")
-    # print(aliceSharedKey)
-    # print("BOB:")
-    # print(bobSharedKey)
-
-    endTime = time.time()
-    elapsed = str(timedelta(seconds=((endTime - startTime))))
-    print("Exchange Time:", elapsed)
+    endExchangeTime = time.time_ns()
+    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000
+    print("Exchange Time:", exchangeTime)
 
     # Attack
     atb = alice.transition(bob)
@@ -72,7 +60,7 @@ def main() -> int:
     # return test(CubeGroup, rg, 11, 7)
 
     # # BRAID GROUP
-    # strands = ["s" + str(i) for i in range(80)]
+    # strands = ["s" + str(i) for i in range(20)]
     # bg = BraidGroup(names=strands)
     # return test(BraidGroup, bg, 4, 2)
 
