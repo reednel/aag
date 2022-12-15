@@ -35,7 +35,7 @@ def timing(group_type, group_object, pk_length, sk_length):
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     endExchangeTime = time.time_ns()
-    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000
+    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000 # to ms
 
     # Execute bruteforce attack
     atb = alice.transition(bob)
@@ -43,7 +43,7 @@ def timing(group_type, group_object, pk_length, sk_length):
     startAttackTime = time.time_ns()
     bfSharedKey = bruteforce(alice.publicKey, bob.publicKey, sk_length, atb, bta)
     endAttackTime = time.time_ns()
-    attackTime = (endAttackTime - startAttackTime) / 1000000
+    attackTime = (endAttackTime - startAttackTime) / 1000000 # to ms
 
     # Check correctness
     if (not (aliceSharedKey == bobSharedKey == bfSharedKey)):
@@ -55,7 +55,8 @@ def timing(group_type, group_object, pk_length, sk_length):
     return exchangeTime, attackTime
 
 def generate_permutation():
-    key_sizes = [1,2,3,4,5]
+    public_sizes = [5]
+    private_sizes = [1,2,3,4,5]
     PERMSIZE = 16
     Sn = [[(0, i)] for i in range(PERMSIZE)]
     pg = PermutationGroup(Sn)
@@ -66,8 +67,8 @@ def generate_permutation():
         writer = csv.writer(f)
         # writer.writerow(["pk", "sk", "exchange", "attack"])
 
-        for pub in tqdm(key_sizes, desc='Public', position=0):
-            for priv in tqdm(range(1, pub), desc='Private', leave=False, position=1):
+        for pub in tqdm(public_sizes, desc='Public', position=0):
+            for priv in tqdm(private_sizes, desc='Private', leave=False, position=0):
                 if pub >= priv:
                     for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
                         exchangeTime, attackTime = timing(PermutationGroup, pg, pub, priv)
