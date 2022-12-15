@@ -109,13 +109,13 @@ def generate_cube():
     #         print(arr)
     #         print(counter / 300.00, '% done', sep='')
     for priv in private:
-        for i in range(1):
+        for _ in range(1):
             cube = CubeGroup()
             cubeExchangeTime, cubeAttackTime = timing(CubeGroup, cube, constant_public, priv)
             arr = np.append(arr, [[cubeExchangeTime.microseconds, cubeAttackTime.microseconds, constant_public, priv]], axis=0)
-            counter = counter + 1
-            print(counter / 300.00, '% done', sep='')
-    print(arr)
+    #         counter = counter + 1
+    #         print(counter / 300.00, '% done', sep='')
+    # print(arr)
     arr.tofile('simulations/cube.csv', sep = ',')
 
 def generate_braid():
@@ -135,12 +135,12 @@ def generate_braid():
     #         print(arr)
     #         print(counter / 300.00, '% done', sep='')
     for priv in private:
-        for i in range(3):
+        for _ in range(3):
             braidExchangeTime, braidAttackTime = timing(BraidGroup, braid, constant_public, priv)
             arr = np.append(arr, [[braidExchangeTime.microseconds, braidAttackTime.microseconds, constant_public, priv]], axis=0)
-            counter = counter + 1
-            print(counter / 300.00, '% done', sep='')
-    print(arr)
+    #         counter = counter + 1
+    #         print(counter / 300.00, '% done', sep='')
+    # print(arr)
     arr.tofile('simulations/braid.csv', sep = ',')
 
 def generate_heisenberg():
