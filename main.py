@@ -17,7 +17,7 @@ def test(group_type, group_object, pk_length, sk_length):
     alice = AAGExchangeObject[group_type](group_object)
     bob = AAGExchangeObject[group_type](group_object)
 
-    startExchangeTime = time.time()
+    startExchangeTime = time.time_ns()
 
     # Choose public keys
     alice.generatePublicKey(pk_length)
@@ -50,19 +50,19 @@ def main() -> int:
 
     # PERMUTATION GROUP
     # Note: a Permutation group with generators of the form (1 2),(1 3),...,(1 n) is the Symmetric group S_n
-    PERMSIZE = 16
-    Sn = [[(0, i)] for i in range(PERMSIZE)]
-    pg = PermutationGroup(Sn)
-    return test(PermutationGroup, pg, 10, 5)
+    # PERMSIZE = 16
+    # Sn = [[(0, i)] for i in range(PERMSIZE)]
+    # pg = PermutationGroup(Sn)
+    # return test(PermutationGroup, pg, 10, 5)
 
     # # RUBIK'S CUBE GROUP
     # rg = CubeGroup()
-    # return test(CubeGroup, rg, 11, 7)
+    # test(CubeGroup, rg, 10, 10)
 
-    # # BRAID GROUP
-    # strands = ["s" + str(i) for i in range(20)]
-    # bg = BraidGroup(names=strands)
-    # return test(BraidGroup, bg, 4, 2)
+    # BRAID GROUP
+    strands = ["s" + str(i) for i in range(20)]
+    bg = BraidGroup(names=strands)
+    return test(BraidGroup, bg, 3, 3)
 
 
 if __name__ == "__main__":

@@ -70,7 +70,7 @@ def generate_permutation():
         for pub in tqdm(public_sizes, desc='Public', position=0):
             for priv in tqdm(private_sizes, desc='Private', leave=False, position=0):
                 if pub >= priv:
-                    for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
+                    for _ in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
                         exchangeTime, attackTime = timing(PermutationGroup, pg, pub, priv)
                         writer.writerow([pub, priv, exchangeTime, attackTime])
                         f.flush()
