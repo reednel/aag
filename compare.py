@@ -65,7 +65,7 @@ def generate_permutation():
 
     with open('simulations/permutation.csv', 'w', newline='') as f:
         writer = csv.writer(f)
-        # writer.writerow(["pk", "sk", "exchange", "attack"])
+        writer.writerow(["pk", "sk", "exchange", "attack"])
 
         for pub in tqdm(public_sizes, desc='Public', position=0):
             for priv in tqdm(private_sizes, desc='Private', leave=False, position=0):
@@ -73,6 +73,41 @@ def generate_permutation():
                     for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
                         exchangeTime, attackTime = timing(PermutationGroup, pg, pub, priv)
                         writer.writerow([pub, priv, exchangeTime, attackTime])
+                        f.flush()
+
+
+def generate_permutation_many():
+    sk_sizes = [1,2,3,4,5]
+    pk_size = 6
+
+    #cube = PermutationGroup(["(3,2,6,7)(4,1,5,8)", "(1,2,6,5)(4,3,7,8)", "(1,2,3,4)(5,6,7,8)"])
+    #s16 = PermutationGroup([[(1,2)],[(1,3)],[(1,4)],[(1,5)],[(1,6)],[(1,7)],[(1,8)],[(1,9)],[(1,10)],[(1,11)],[(1,12)],[(1,13)],[(1,14)],[(1,15)],[(1,16)]])
+    s3 = SymmetricGroup(3)
+    s4 = SymmetricGroup(4)
+    s5 = SymmetricGroup(5)
+    s6 = SymmetricGroup(6)
+    s7 = SymmetricGroup(7)
+    s8 = SymmetricGroup(8)
+    d5 = DihedralGroup(5)
+    d6 = DihedralGroup(6)
+    d7 = DihedralGroup(7)
+
+    groups = [s3, s4, s5, s6, s7, s8, d5, d6, d7]
+    group_names = ["s3", "s4", "s5", "s6", "s7", "s8", "d5", "d6", "d7"]
+
+    NUMBER_OF_POINTS = 25
+
+    with open('simulations/many_groups.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["group", "pk", "sk", "exchange", "attack", "cardinality"])
+
+        for group, group_name in tqdm(zip(groups, group_names), desc='Groups', position=0):
+            pub = pk_size
+            for priv in tqdm(sk_sizes, desc='Private', leave=False, position=1):
+                if pub >= priv:
+                    for i in tqdm(range(NUMBER_OF_POINTS), leave=False, desc='Points', position=2):
+                        pgExchangeTime, pgAttackTime = timing(PermutationGroup, group, pub, priv)
+                        writer.writerow([group_name, pub, priv, pgExchangeTime.microseconds, pgAttackTime.microseconds, group.cardinality()])
                         f.flush()
 
 def generate_cube():
