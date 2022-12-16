@@ -16,7 +16,9 @@ def extend(lst) -> list:
 # The progress bar refelcts percent of key space searched, not percent to completion
 def solve_SCSP(xbar_e, n, ybar, XiYX):
     # for x in tqdm( product(xbar_e, repeat=n), desc="Solving SCSP", total=(len(xbar_e)**n)):
+    guesses = 0
     for x in product(xbar_e, repeat=n):
+        guesses += 1
         g = reduce(lambda a, b: a * b, x)
         conj = True
         for i in range(len(ybar)):
@@ -24,7 +26,7 @@ def solve_SCSP(xbar_e, n, ybar, XiYX):
                 conj = False
                 break
         if conj:
-            return g
+            return g, guesses
 
     # error: no g was found
     return 0
@@ -36,12 +38,12 @@ def bruteforce(abar, bbar, n, AiBA, BiAB):
 
     # Calculate A
     abar_e = extend(abar)
-    A = solve_SCSP(abar_e, n, bbar, AiBA)
+    A, a_guesses = solve_SCSP(abar_e, n, bbar, AiBA)
 
     # Calculate B
     bbar_e = extend(bbar)
-    B = solve_SCSP(bbar_e, n, abar, BiAB)
+    B, b_guesses = solve_SCSP(bbar_e, n, abar, BiAB)
 
     K = A.inverse() * B.inverse() * A * B
 
-    return K
+    return K, a_guesses + b_guesses

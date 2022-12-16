@@ -65,9 +65,9 @@ class AAGExchangeObject(Generic[T]):
 
     def generatePublicKey(self, length: int) -> None:
         assert length > 0
-        assert self.G.order() >= length
+        assert self.G.cardinality() >= length
 
-        pk = []
+        pk: set = set()
         while len(pk) < length:
             if isinstance(self.G, HeisenbergGroup):
                 g = self.random_element_H(self.G._n, len(self.G._ring))
@@ -80,7 +80,7 @@ class AAGExchangeObject(Generic[T]):
             if (g in pk or g.inverse() in pk):
                 continue
 
-            pk.append(g)
+            pk.add(g)
 
         self._publicKey = list(pk)
 
