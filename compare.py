@@ -56,7 +56,7 @@ def timing(group_type, group_object, pk_length, sk_length):
 
 
 def generate(group_type, group, group_name, number_of_points, public_sizes, private_sizes):
-    with open('simulations/all.csv', 'a', newline='') as f:
+    with open('simulations/tricky.csv', 'a', newline='') as f:
         writer = csv.writer(f)
 
         for pub in tqdm(public_sizes, desc='Public',leave=False, position=1):
@@ -81,8 +81,15 @@ def main():
     #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [5], [1, 2, 3, 4, 5])
     #generate(BraidGroup, BraidGroup(4), "Braid4", 3, [5], [1, 2, 3, 4, 5]) # dnf
 
-    generate(QuaternionGroup, QuaternionGroup(), "Quaternion", 50, [5], [1, 2, 3, 4, 5])
+    #generate(QuaternionGroup, QuaternionGroup(), "Quaternion", 50, [5], [1, 2, 3, 4, 5])
 
+    #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 15, [5], [1, 2, 3, 4, 5])
+    #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 5, [5], [5])
+
+    #generate(PermutationGroup, SymmetricGroup(16), "S16", 5, [5], [1, 2, 3, 4, 5, 6, 7])
+    #generate(PermutationGroup, SymmetricGroup(16), "S16", 10, [5], [8])
+    generate(PermutationGroup, SymmetricGroup(16), "S16", 20, [2], [6])
+    generate(PermutationGroup, SymmetricGroup(16), "S16", 20, [8], [2])
 
 if __name__ == "__main__":
     main()
