@@ -96,7 +96,6 @@ def animate(group_type, group_object, pk_length, sk_length):
     pause()
     os.system('clear')
 
-    # print(alice.publicKey)
     backward_foxsay(f"ALICE's PUBLIC SET\nI chose {len(alice.publicKey)} elements from {group_object} as my public set.")
 
     pause()
@@ -267,10 +266,6 @@ def main():
     sleep(10)
 
     cowsay.trex("Bye!")
-
-
-    
-
 
 if __name__ == "__main__":
     main()

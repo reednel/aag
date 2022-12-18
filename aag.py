@@ -46,7 +46,6 @@ class AAGExchangeObject(Generic[T]):
         return g
 
     def random_element_B(self, n):
-
         # See "Length Based Attack and Braid Groups: Cryptanalysis of
         # Anshel-Anshel-Goldfeld Key Exchange Protocol" for choice of L1, L2
         L1 = 5
@@ -60,7 +59,7 @@ class AAGExchangeObject(Generic[T]):
 
         B = [getrand(n) for _ in range(random.randint(L1, L2))]
 
-        g = self.G.Element(self.G, B, check=False)
+        g = self.G.Element(self.G, B, check=False) # Need check=false to circumvent O(|G|) check
         return g
 
     def generatePublicKey(self, length: int) -> None:
@@ -74,7 +73,7 @@ class AAGExchangeObject(Generic[T]):
             elif isinstance(self.G, BraidGroup_class):
                 g = self.random_element_B(self.G.strands()-1)
             else:
-                g = self.G.random_element() # very slow for large groups
+                g = self.G.random_element() # can be very slow for large groups
 
             # For consistency, disallow duplicates and inverses in the pk
             if (g in pk or g.inverse() in pk):
@@ -90,18 +89,18 @@ class AAGExchangeObject(Generic[T]):
     def generatePrivateKey(self, length: int) -> None:
         assert length > 0
 
-        # choose random indices from publicKey
+        # Choose random indices from publicKey
         indices = random.choices(range(len(self.publicKey)), k=length)
         is_inverses = random.choices([True, False], k=length)
         self._privateKeySource = list(zip(indices, is_inverses))
 
-        # collect chosen elements and invert if randomly selected
+        # Collect chosen elements and invert if randomly selected
         sk = [self.publicKey[i] for i in indices]
         for i in range(len(sk)):
             if is_inverses[i]:
                 sk[i] = sk[i].inverse()
 
-        # private key is ordered product of chosen elements
+        # Private key is ordered product of chosen elements
         self._privateKey = reduce(lambda x, y: x * y, sk)
         assert self._privateKey in self.G
 

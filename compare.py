@@ -7,13 +7,9 @@ from sage.groups.braid import BraidGroup
 
 from aag import AAGExchangeObject
 from attack import bruteforce
-import time
-
-import numpy as np
-
-from tqdm import tqdm
-
 import csv
+import time
+from tqdm import tqdm
 
 
 def timing(group_type, group_object, pk_length, sk_length):
@@ -22,15 +18,15 @@ def timing(group_type, group_object, pk_length, sk_length):
 
     startExchangeTime = time.time_ns()
 
-    # choose random subset of bg to be publicKey
+    # Choose random subset of bg to be publicKey
     alice.generatePublicKey(pk_length)
     bob.generatePublicKey(pk_length)
 
-    # choose random subset-permutation of each publicKey to be privateKey
+    # Choose random subset-permutation of each publicKey to be privateKey
     alice.generatePrivateKey(sk_length)
     bob.generatePrivateKey(sk_length)
 
-    # derive shared key
+    # Derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
@@ -71,40 +67,7 @@ def main():
     #writer.writerow(["group", "pk", "sk", "exchange", "attack", "guesses", "cardinality"])
 
     #generate(PermutationGroup, SymmetricGroup(8), "S8", 10, [5], [1, 2, 3, 4, 5, 6, 7])
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 10, [5], [1, 2, 3, 4, 5, 6, 7])
-    #generate(CubeGroup, CubeGroup(), "Rubik", 15, [5], [1, 2, 3, 4, 5])
-    #generate(CubeGroup, CubeGroup(), "Rubik", 5, [5], [6, 7])
-    #generate(PermutationGroup, SymmetricGroup(8), "S8", 15, [5], [6, 7])
-    #generate(BraidGroup, BraidGroup(5), "Braid5", 3, [5], [1, 2, 3, 4, 5])
 
-    #generate(QuaternionGroup, QuaternionGroup(), "Quaternion", 25, [1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6])
-
-    #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 25, [4,5], [1, 2, 3, 4, 5, 6])
-
-    #generate(CubeGroup, CubeGroup(), "Rubik", 25, [1,2,3,4,5], [1, 2, 3, 4, 5])
-
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 5, [5], [1, 2, 3, 4, 5, 6, 7])
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 10, [5], [8])
-
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 100, [1,2,3,4,5], [1,2,3,4,5])
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 25, [5], [6,7,8,9,10,11,12])
-
-    #generate(BraidGroup, BraidGroup(2), "Braid2", 3, [1,2,3,4,5], [1, 2, 3, 4, 5])
-    #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [1,2,3,4,5], [1, 2, 3, 4, 5])
-    generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [1,2,3])
-
-    #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 25, [6,7], [1, 2, 3, 4, 5, 6])
-
-    #generate(PermutationGroup, SymmetricGroup(32), "S32", 10, [5], [1,2,3,4,5,6])
-    #generate(PermutationGroup, SymmetricGroup(64), "S64", 10, [5], [1,2,3,4,5,6])
-
-    #generate(BraidGroup, BraidGroup(4), "Braid4", 3, [1,2,3,4], [1,2,3,4])
-
-    #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [5], [6])
-
-    #generate(PermutationGroup, SymmetricGroup(16), "S16", 3, [1,2,3,4,5,6,7,8,9,10], [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-
-    #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [5], [7,8,9,10])
     pass
 
 if __name__ == "__main__":

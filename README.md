@@ -8,8 +8,6 @@ extension](https://code.visualstudio.com/docs/devcontainers/containers)
 
 The Docker container comes with [SAGE](https://www.sagemath.org/) installed.
 
-# Compiled code
+## Compiled code
 
- See [this
- documentation](https://doc.sagemath.org/html/en/tutorial/programming.html) for
- more details and the importance of creating compiled code for execution speed.
+ See [this documentation](https://doc.sagemath.org/html/en/tutorial/programming.html) for more details on the importance of creating compiled code for execution speed.

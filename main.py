@@ -32,7 +32,7 @@ def test(group_type, group_object, pk_length, sk_length):
     bobSharedKey = bob.deriveSharedKey(False, alice)
 
     endExchangeTime = time.time_ns()
-    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000
+    exchangeTime = (endExchangeTime - startExchangeTime) / 1000000 # to ms
     print("Exchange Time:", exchangeTime)
 
     # Attack
@@ -59,15 +59,18 @@ def main() -> int:
     # rg = CubeGroup()
     # test(CubeGroup, rg, 10, 10)
 
-    # BRAID GROUP
-    strands = ["s" + str(i) for i in range(20)]
-    bg = BraidGroup(names=strands)
-    return test(BraidGroup, bg, 3, 3)
+    # # BRAID GROUP
+    # BRAIDSIZE = 5
+    # strands = ["s" + str(i) for i in range(BRAIDSIZE)]
+    # bg = BraidGroup(names=strands)
+    # return test(BraidGroup, bg, 3, 3)
+
+    pass
 
 
 if __name__ == "__main__":
     tests = 5
-    successes = [0 for i in range(tests)]
+    successes = [0 for _ in range(tests)]
     for i in range(tests):
         print(f"\n---------- ITERATION {i} (random seed = {i}) ----------")
         random.seed(i)
