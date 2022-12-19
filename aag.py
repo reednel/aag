@@ -46,7 +46,6 @@ class AAGExchangeObject(Generic[T]):
         return g
 
     def random_element_B(self, n):
-
         # See "Length Based Attack and Braid Groups: Cryptanalysis of
         # Anshel-Anshel-Goldfeld Key Exchange Protocol" for choice of L1, L2
         L1 = 5

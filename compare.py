@@ -91,8 +91,24 @@ def main():
 
     #generate(BraidGroup, BraidGroup(2), "Braid2", 3, [1,2,3,4,5], [1, 2, 3, 4, 5])
     #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [1,2,3,4,5], [1, 2, 3, 4, 5])
-    generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [1,2,3])
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [1,2,3])
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [4])
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 10, [5], [5])
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 10, [5], [6])
 
+    #generate(BraidGroup, BraidGroup(4), "Braid4", 3, [1,2,3,4], [1,2,3,4])
+
+    #generate(BraidGroup, BraidGroup(3), "Braid5", 15, [5], [1,2,3])
+    #generate(BraidGroup, BraidGroup(3), "Braid5", 10, [5], [4])
+    #generate(BraidGroup, BraidGroup(3), "Braid5", 5, [5], [5])
+    #generate(BraidGroup, BraidGroup(3), "Braid5", 5, [5], [6])
+
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [5, 6])
+
+    #generate(BraidGroup, BraidGroup(3), "Braid3", 15, [5], [7])
+
+    #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 25, [5], [7])
+    
     #generate(HeisenbergGroup, HeisenbergGroup(n=5, R=Integer(sys.maxsize)), "Heisenberg5", 25, [6,7], [1, 2, 3, 4, 5, 6])
 
     #generate(PermutationGroup, SymmetricGroup(32), "S32", 10, [5], [1,2,3,4,5,6])
@@ -105,6 +121,8 @@ def main():
     #generate(PermutationGroup, SymmetricGroup(16), "S16", 3, [1,2,3,4,5,6,7,8,9,10], [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 
     #generate(BraidGroup, BraidGroup(3), "Braid3", 3, [5], [7,8,9,10])
+
+    generate(CubeGroup, CubeGroup(), "Rubik", 20, [5], [6])
     pass
 
 if __name__ == "__main__":
