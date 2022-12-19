@@ -1,6 +1,6 @@
 from functools import reduce
 from itertools import product
-from tqdm import tqdm
+# from tqdm import tqdm
 
 # Extend the given list to include inverses
 def extend(lst) -> list:
