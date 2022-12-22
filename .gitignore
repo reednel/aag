@@ -1,6 +1,7 @@
 # Folders
 __pycache__/
 .mypy_cache/
+.github/
 
 # Files
 *.o
@@ -10,7 +11,8 @@ __pycache__/
 *.png
 *.jpg
 *.pdf
-!paper/graphics/*.pdf
+!paper/paper.pdf
+# !paper/graphics/*.pdf
 
 # Packages #
 *.7z
