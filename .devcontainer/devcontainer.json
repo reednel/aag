@@ -13,13 +13,6 @@
 	//	}
 	//},
 
-    "settings": {
-        // General settings
-        "files.eol": "\n",
-        "rewrap.autoWrap.enabled": true,
-        "editor.formatOnSave": false
-    },
-
     // Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.

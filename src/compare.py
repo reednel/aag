@@ -1,5 +1,5 @@
-from aag import AAGExchangeObject
-from attack import bruteforce
+from src.aag import AAGExchangeObject
+from src.attack import bruteforce
 import csv
 import time
 from tqdm import tqdm
@@ -41,7 +41,6 @@ def timing(group_type, group_object, pk_length, sk_length):
         print("\tEve's K  :", bfSharedKey)
 
     return exchangeTime, attackTime, guesses
-
 
 def generate(file_name, group_type, group, group_name, number_of_points, public_sizes, private_sizes):
     with open(file_name, 'a', newline='') as f:

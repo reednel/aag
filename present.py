@@ -5,7 +5,7 @@ from sage.groups.perm_gps.permgroup import PermutationGroup
 from sage.groups.perm_gps.cubegroup import CubeGroup
 from sage.groups.braid import BraidGroup
 
-from aag import AAGExchangeObject
+from src.aag import AAGExchangeObject
 
 import itertools
 import random
@@ -127,7 +127,7 @@ def animate(group_type, group_object, pk_length, sk_length):
 
     backward_foxsay("""I compute my transition for you, because you
     cannot see my secret key\n(A^-1*b*A) ∀ b ∈ b_bar""")
-    
+
     pause()
     os.system('clear')
     print(f"Ka = \n{aliceSharedKey}")
@@ -160,12 +160,12 @@ def animate(group_type, group_object, pk_length, sk_length):
     print(f"Ka = \n{aliceSharedKey}")
     print(f"Kb = \n{bobSharedKey}")
     print("----------------------------------------------------------------------------------------------------")
-    
+
     pause()
     os.system('clear')
     cowsay.trex("I still know neither private key, so to obtain the shared key I would have to guess both private keys!")
     pause()
-    
+
     print("\nTime:", elapsed)
 
     return (aliceSharedKey == bobSharedKey and aliceSharedKey == alice.oracle(bob))
@@ -187,7 +187,7 @@ def demo_without_animation(group_type, group_object, pk_length, sk_length):
     # derive shared key
     aliceSharedKey = alice.deriveSharedKey(True, bob)
     bobSharedKey = bob.deriveSharedKey(False, alice)
-    
+
     endTime = time.time()
 
     os.system('clear')
@@ -225,7 +225,7 @@ def main():
 
     hg_result = animate(HeisenbergGroup, hg, 27, 17)
     successes.append(hg_result)
-    
+
     # PERMUTATION GROUP
     pg = PermutationGroup([[(1,2,3),(4,5)],[(3,4)]]) # ,[(5,6,7),(8,9)]
     successes.append(demo_without_animation(PermutationGroup, pg, 23, 13))

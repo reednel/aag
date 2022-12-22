@@ -9,7 +9,7 @@ from sage.groups.braid import BraidGroup
 
 import sys
 sys.path.append('..')
-from compare import generate
+from src.compare import generate
 
 # Warning: these parameters may require multiple days to complete.
 def main():
