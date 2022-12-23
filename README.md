@@ -1,6 +1,6 @@
 # Anshel-Anshel-Goldfeld
 
-[![GitHub Releases](https://img.shields.io/github/v/release/reednel/aag/?display_name=tag)](https://github.com/reednel/aag/releases) [![GitHub license](https://img.shields.io/github/license/reednel/aag)](https://github.com/reednel/aag/blob/main/LICENCE) [![GitHub Issues](https://img.shields.io/github/issues/reednel/aag)](https://github.com/reednel/aag/issues) ![ ](https://img.shields.io/github/languages/code-size/reednel/aag)
+[![GitHub Releases](https://img.shields.io/github/v/release/reednel/aag?display_name=tag)](https://github.com/reednel/aag/releases) [![GitHub license](https://img.shields.io/github/license/reednel/aag)](https://github.com/reednel/aag/blob/main/LICENCE) [![GitHub Issues](https://img.shields.io/github/issues/reednel/aag)](https://github.com/reednel/aag/issues) ![ ](https://img.shields.io/github/languages/code-size/reednel/aag)
 
 ## Description
 
