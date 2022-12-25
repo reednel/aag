@@ -1,6 +1,6 @@
 # Anshel-Anshel-Goldfeld
 
-[![GitHub Releases](https://img.shields.io/github/v/release/reednel/aag?display_name=tag)](https://github.com/reednel/aag/releases) [![GitHub license](https://img.shields.io/github/license/reednel/aag)](https://github.com/reednel/aag/blob/main/LICENCE) [![GitHub Issues](https://img.shields.io/github/issues/reednel/aag)](https://github.com/reednel/aag/issues) ![ ](https://img.shields.io/github/languages/code-size/reednel/aag) [![Paper](https://img.shields.io/badge/paper-pdf-blueviolet)](https://github.com/reednel/aag/blob/paper/main.pdf)
+[![GitHub Releases](https://img.shields.io/github/v/release/reednel/aag?display_name=tag)](https://github.com/reednel/aag/releases) [![GitHub license](https://img.shields.io/github/license/reednel/aag)](https://github.com/reednel/aag/blob/main/LICENCE) [![GitHub Issues](https://img.shields.io/github/issues/reednel/aag)](https://github.com/reednel/aag/issues) [![ ](https://img.shields.io/github/repo-size/reednel/aag)](https://github.com/reednel/aag) [![Paper](https://img.shields.io/badge/paper-pdf-blueviolet)](https://github.com/reednel/aag/blob/paper/main.pdf)
 
 ## Description
 
@@ -12,7 +12,7 @@ This program requires **Python** and **SAGE**. Sage may be installed in a Docker
 
 ## Docker Deployment
 
-The `.devcontainer` folder contains the config to open this repository into a Docker container with VS code and the [VS code Dev Containers extension](https://code.visualstudio.com/docs/devcontainers/containers)
+The `.devcontainer` folder contains the config to open this repository into a Docker container with VS code and the [VS code Dev Container extension](https://code.visualstudio.com/docs/devcontainers/containers).
 
 The Docker container comes with [SAGE](https://www.sagemath.org/) installed.
 
@@ -28,8 +28,8 @@ All scripts and instructions to reproduce the analyses in the manuscript can be 
 
 ## Contributions, Questions, Issues, and Feedback
 
-Users interested in expanding functionalities in MiNAA are welcome to do so. Issues reports are encouraged through Github's [issue tracker](https://github.com/reednel/aag/issues). See details on how to contribute and report issues in [CONTRIBUTING.md](https://github.com/reednel/aag/blob/master/CONTRIBUTING.md).
+Users interested in expanding functionalities in this repository are welcome to do so. Issues reports are encouraged through Github's [issue tracker](https://github.com/reednel/aag/issues). See details on how to contribute and report issues in [CONTRIBUTING.md](https://github.com/reednel/aag/blob/master/CONTRIBUTING.md).
 
 ## License
 
-MiNAA is licensed under the [MIT](https://opensource.org/licenses/MIT) licence.
+This repository is licensed under the [MIT](https://opensource.org/licenses/MIT) licence.
