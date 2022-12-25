@@ -1,7 +1,6 @@
 # Folders
 __pycache__/
 .mypy_cache/
-.github/
 
 # Files
 *.o
