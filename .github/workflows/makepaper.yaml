@@ -1,6 +1,6 @@
 # Github workflow to compile latex and deploy the pdf to an orphan branch.
 # From https://github.com/dgerosa/writeapaper.
-# Paper at: https://github.com/reednel/aag/blob/paper/paper.pdf
+# Paper at: https://github.com/reednel/aag/blob/paper/main.pdf
 
 name: makepaper
 on: [push]
