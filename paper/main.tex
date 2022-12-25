@@ -1,0 +1,129 @@
+\documentclass[sigconf,nonacm]{acmart}
+
+\makeatletter
+\def\@ACM@checkaffil{}
+\makeatother
+
+\settopmatter{printacmref=false}
+\setcopyright{cc}
+\setcctype{by-sa}
+
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{gray}{#1}}
+
+% defining the \BibTeX command - from Oren Patashnik's original BibTeX documentation.
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08emT\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
+\usepackage{nicefrac}
+\usepackage{siunitx}
+\usepackage{array,framed}
+\usepackage{booktabs}
+\usepackage{
+  color,
+  float,
+  epsfig,
+  wrapfig,
+  graphics,
+  graphicx,
+  subcaption
+}
+
+\usepackage{textcomp,amssymb}
+\usepackage{setspace}
+\usepackage{latexsym,fancyhdr,url}
+\usepackage{enumerate}
+\usepackage{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{graphics}
+\usepackage{xparse} % argument parsing -- \edist
+\usepackage{xspace}
+\usepackage{multirow}
+\usepackage{csvsimple}
+\usepackage{balance}
+
+\usepackage{
+  tikz,
+  pgfplots,
+  pgfplotstable
+}
+\usepackage{hyperref}
+
+\usetikzlibrary{
+  shapes.geometric,
+  arrows,
+  external,
+  pgfplots.groupplots,
+  matrix
+}
+
+\pgfplotsset{compat=1.9}
+
+\usepackage{mathtools,}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+
+\DeclareGraphicsExtensions{%
+    .png,.PNG,%
+    .pdf,.PDF,%
+    .jpg,.mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
+
+\input{defs}
+\setlength{\belowcaptionskip}{-10pt} 
+\setlength{\footskip}{30pt}
+\setlength{\abovecaptionskip}{5pt plus 3pt minus 2pt} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\fontfamily{lmr}\selectfont
+% \def\thetitle{A Practical Way to Generate Strong Keys from Noisy Data}
+\fancyhead{}
+\def\thetitle{Comparing Platform Groups for the Anshel-Anshel-Goldfeld Key Exchange}
+\title{\thetitle}
+
+\author{Reed Nelson}
+\affiliation{\small{Department of Computer Sciences \\
+University of Wisconsin-Madison}}
+
+\author{Michael Noguera}
+\affiliation{\small{Department of Computer Sciences \\
+University of Wisconsin-Madison}}
+
+\author{Carson Drury}
+\affiliation{\small{Department of Computer Sciences \\
+University of Wisconsin-Madison}}
+
+\date{}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10002978.10002979.10002981.10011745</concept_id>
+       <concept_desc>Security and privacy~Public key encryption</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10002978.10002979.10002981</concept_id>
+       <concept_desc>Security and privacy~Public key (asymmetric) techniques</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Public key encryption}
+\ccsdesc[500]{Security and privacy~Public key (asymmetric) techniques}
+
+\input{abstract}
+\maketitle
+\keywords{}
+
+\input{intro}
+\input{background}
+\input{methodology}
+\input{results}
+\input{conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{bib}
+
+\end{document}

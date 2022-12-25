@@ -1,0 +1,101 @@
+\section{Methodology/Design}
+\label{sec:methodology}
+
+\subsection{Threat Model}
+The threat model for AAG is the same as for other key exchange protocols. We consider an attacker (Eve) who can view all messages sent over a public channel, and two actors (Alice and Bob) who wish to communicate using the public channel without Eve viewing their communications. Our Eve is a \emph{passive} attacker; she only eavesdrops on Alice and Bob's messages but does not engage in communication with either of them. The abilities of an \textit{active} man-in-the-middle attacker may include interception, decryption, and alteration of messages en-route, but such coniderations are beyond the scope of this paper.
+
+Furthermore, our analysis focuses only on Eve mounting a naive brute-force attack to recover Alice and Bob's private keys, in order to directly compute the shared key $K = A^{-1}B^{-1}AB$. We choose this attack due to its generality and relative ease of implementation. 
+
+In reality, an attacker may take advantage of platform-specific knowledge to perform an informed search over the key space. We do not consider such advanced attacks here, but have intentionally built our program extensibly to enable its use for comparing these attacks. We also do not consider authenticating Alice or Bob to each other.
+
+It is worth noting that existing key exchange protocols like Diffie-Hellman are theorized to be more secure than AAG under this same threat model. The main novelty of AAG in this situation is its presumed resistance to quantum attack, although its practical security is undermined by group-specific weaknesses like those that this paper attempts to analyze.
+
+\subsection{Implementation}\label{sec:impl}
+
+We have created three Python programs: \texttt{aag.py}, \texttt{attack.py}, and \texttt{compare.py}. These handle the key exchange, brute force attack, and performance measurements respectively.
+
+To handle group operations, we use the SageMath library \cite{sagemath}, a Computer Algebra System that exposes a Python interface. Sage contains its own  Python interpreter bundled with its math functions; the Sage library can only be used through this interpreter. As a result, our program is run through Sage as well. For example, \texttt{compare.py} is invoked from the terminal as \texttt{\$ sage --python compare.py}, rather than being directly passed to the system Python.
+
+Each of our programs expose functions useful for experimenting with the AAG protocol. The operation of each is detailed in this section.
+
+\subsubsection{Key Exchange}\label{sec:impl-key-exchange} In \texttt{aag.py}, we implement the key exchange protocol. We define a generic \texttt{AAGExchangeObject} class, which represents the information held by a single party in the key exchange. The exchange object exposes functions to generate public and private keys, as well as to compute the transition set. Private keys are held internally and scoped privately such that accessing them from outside the class will throw an error, however no effort is made to actually secure them against an attacker with access to the computer.
+
+\RestyleAlgo{ruled}
+\begin{algorithm}
+\caption{Performing a key exchange using \texttt{aag.py}}	
+\label{alg:key-exchange}
+\DontPrintSemicolon
+\SetKwComment{Comment}{/* }{ */}
+from sage.groups.braid import BraidGroup\;
+from aag import AAGExchangeObject\;\;
+\textit{bg} $\gets$ BraidGroup(5) \Comment*[r]{instantiate group object}
+\textit{alice} $\gets$ \texttt{AAGExchangeObject}[BraidGroup](\textit{bg})\;
+\textit{bob} $\gets$ \texttt{AAGExchangeObject}[BraidGroup](\textit{bg})\;\;
+\Comment{Choose public sets and private keys.}
+\textit{alice}.generatePublicKey(length $= 7$)\;
+\textit{bob}.generatePublicKey(length $= 7$)\;
+\textit{alice}.generatePrivateKey(length $= 5$)\;
+\textit{bob}.generatePrivateKey(length $= 5$)\;\;
+\Comment{Shared keys. Alice: True, Bob: False}
+\Comment{Transition sets are handled automatically.}
+\textit{aliceSharedKey} = \textit{alice}.deriveSharedKey(True, bob)\;
+\textit{bobSharedKey} = \textit{bob}.deriveSharedKey(False, alice)\;\;
+\textbf{assert} \textit{aliceSharedKey} = \textit{bobSharedKey}
+\end{algorithm}
+
+An example usage of the \texttt{AAGExchangeObject} is shown in Algorithm \ref{alg:key-exchange}. In the first step, a Sage BraidGroup object is created. The object is passed to the \texttt{AAGExchangeObject} constructor, and its type (in this case BraidGroup) is specified as the type parameter. Here we initialize Alice and Bob this way.
+
+Next, Alice and Bob are instructed to choose public sets and private keys (\texttt{generatePublicKey($N$)} and \texttt{generatePrivateKey($L$)}). These methods take the public set size $N$ and private key size $L$ as parameters. The influence of each of these parameters is analyzed in the evaluation section of this paper.
+
+To exchange keys, we call \texttt{deriveSharedKey()} for both Alice and Bob, giving them references to each other as parameters. To resolve the asymmetry at this step, where Bob must invert the value he calculates so that it agrees with Alice's, we use a boolean parameter where Alice enters True and Bob enters False. At this step, Alice also asks Bob for his transition set by calling the internal method \texttt{\textit{bob}.transition(\textit{alice})}. This is abstracted away by deriveSharedKey so is not explicit in Algorithm \ref{alg:key-exchange}, but the method is publically exposed if needed. For normal usage it does not need to be called by the user. The values returned by each call to \texttt{deriveSharedKey} are $K_a$ and $(K_b)^{-1}=K_a$ respectively. This concludes the example of a key exchange.
+
+Finally, we also provide a test oracle invoked as \texttt{\textit{alice}.oracle(\textit{bob})}, which accesses the private \texttt{bob.\_privateKey} field to directly compute the shared key $A^{-1}B^{-1}AB$. Of course, accessing this field is not allowed during the key exchange; this is only done in the test oracle.
+
+\subsubsection{Getting Random Elements} A critical component of any AAG exchange is the ability to get an element at random from the platform group. The implementation of this function varies from group to group in the Sage library, and for some groups, this function becomes unusably slow at sufficiently high cardinalities. For this reason, we wrote group-specific \texttt{getRandomElement()} functions when necessary, for the groups we analyzed, which circumvent Sage's behavior. These functions are used automatically when defined, otherwise Sage's random element is used as a fallback.
+
+\subsubsection{Attack} As already discussed, an inherent difficulty with analyzing the security of AAG is that the range of potential platform groups is immense, and even for a given platform, an attack's effectiveness may be highly dependent on the the precise instantiation chosen. By implementing a completely generic brute-force attack, we are able to judge any instantiation of any platform using the same tool, and to the same standard. The brute-force algorithm used is specified in Algorithm \ref{alg:brute-force}. It performs the attack described previously in Section \ref{sec:attacks-on-aag}, solving SR-SCSP twice to directly compute both $A$ and $B$.
+
+\RestyleAlgo{ruled}
+\SetCommentSty{mycommfont}
+
+\begin{algorithm}
+\caption{A brute force solution to SR-SCSP}\label{alg:brute-force}
+\DontPrintSemicolon
+\SetKwFunction{Fmain}{main}
+\SetKwFunction{Fbruteforce}{bruteforce}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\Fbruteforce{$\overline{x}'$, $L$, $\overline{y}$, $X^{-1}\overline{y}X$}}
+{
+    \For {\textbf{each} $x$ \textbf{in} $\overline{x}'^L$}
+    {
+        $g \gets x_1 \cdot x_2 \cdot ... \cdot x_{2N}$\;
+        bool conj $\gets$ TRUE\;
+        \For {\textbf{each} $\overline{y}_i$ \textbf{in} $\overline{y}$}
+        {
+            \If {$g^{-1} \cdot \overline{y}_i \cdot g \neq X^{-1}\overline{y}_iX$}
+            {
+                conj $\gets$ FALSE\;
+                break\;
+            }
+        }
+        \If {\text{conj}}
+        {
+            break\;
+        }
+    }
+    \KwRet $g$\;
+}
+\;
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\Fmain{$\overline{a}$, $\overline{b}$, $L$, $A^{-1}\overline{b}A$, $B^{-1}\overline{a}B$}}
+{
+    $\overline{a}' \gets \overline{a} \cup \overline{a}^{-1}$\;
+    $A \gets$ bruteforce($\overline{a}'$, $L$, $\overline{b}$, $A^{-1}\overline{b}A$)\;
+
+    $\overline{b}' \gets \overline{b} \cup \overline{b}^{-1}$\;
+    $B \gets$ bruteforce($\overline{b}'$, $L$, $\overline{a}$, $B^{-1}\overline{a}B$)\;
+    
+    $K \gets A^{-1}B^{-1}AB$\;
+    \KwRet $K$\;
+}
+\end{algorithm}

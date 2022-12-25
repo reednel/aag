@@ -1,0 +1,57 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Anshel-Anshel-Goldfeld Key Exchange}\label{sec:bg-protocol}
+
+We provide here a practical explanation of an AAG exchange between Alice and Bob. For a more mathematical formulation, refer to AAG \cite{aag}. The steps of the exchange are as follows:
+
+\begin{enumerate}[1.]
+	\item Alice and Bob agree on a platform group $G$. They establish that Alice is the first party and Bob the second, to resolve asymmetry in the last step.
+	\item \textbf{Public set (Alice)} Alice chooses an $N$-sized subset of $G$ to be her public set\footnote{Without loss of generality, we assume here that Alice and Bob both have public sets of size $N$ and private keys that are products of $L$ elements. In reality, the sizes of their sets and keys need not be equal.}, and sends it to Bob.
+		$$\bar{a} = (a_1, \ldots, a_{N}), \  a_i \in G$$
+	Programatically, the data type of $\bar{a}$ is a one-dimentional set containing elements of the same type as elements of $G$.
+    We also place the following restrictions on $\bar{a}$ (and $\bar{b}$): a public set cannot contain duplicate elements, nor can a public set contain elements that are inverses of other elements in the set.\footnote{This restriction is not part of the protocol described in AAG \cite{aag}. We have added the prohibition on inverses to make key entropy more predictable.}
+	\item \textbf{Public set (Bob)} Bob similarly chooses a public set and sends it to Alice.
+		$$\bar{b} = (b_1, \ldots, b_{N}), \ b_i \in G$$
+	\item \textbf{Private key (Alice)} Alice chooses $L$ elements at random from $\overline{a}$, and stores (at random) either it or its inverse in a tuple. Her private key $A$ is the product of the elements in sequence.\\
+		Mathematically, she computes
+		$$A = a_{s(1)}^{\varepsilon_{1}} \times a_{s(2)}^{\varepsilon_{2}} \times \ldots \times a_{s(L-1)}^{\varepsilon_{L-1}} \times a_{s(L)}^{\varepsilon_L}$$ where $a_i \in \bar{a}$ and $\varepsilon_i \in \{\pm1\}$. Here $A$ is the same type as a single element of $G$. 
+		
+	\item \textbf{Private key (Bob)} Bob does the same to derive his private key, producing 
+		$$B = b_{t(1)}^{\delta_1} \times b_{t(2)}^{\delta_2} \times \ldots \times b_{t(L-1)}^{\delta_{L-1}} \times b_{t(L)}^{\delta_L}$$
+		where $b_{t(i)} \in \bar{b}$ and $\delta_i \in \{\pm1\}$.
+	\item \textbf{Transition (Bob $\rightarrow$ Alice)} Alice needs to obtain the shared key $A^{-1}B^{-1}AB$ but is unable to compute $B^{-1}AB$ herself, as she does not know Bob's private key $B$ or its inverse $B^{-1}$.\\
+		She could ask Bob to compute $B^{-1} a_{s} B$ for each $a_{s}$ in her private key $A$, then multiply all those terms together to obtain the needed $B^{-1}AB$, but this would reveal the elements in $A$. \\
+		Instead, Alice asks Bob to send her $B^{-1}aB$ for all $a$ in her public set $\bar{a}$. This is the \textit{transition set} $a' = B^{-1} \bar{a} B$. It is a superset of the values she needs, but reveals nothing unknown about her private key. $a'$ is an ordered one-dimensional set with entries corresponding to the elements in $\bar{a}$.
+		$$a' = B^{-1}\bar{a}B = (B^{-1} a_1 B, \ B^{-1} a_2 B, \ \dots \ , \ B^{-1} a_{N-1} B, \ B^{-1} a_{N} B)$$
+		Each element of the transition set, $a'_i$, is obtained by computing
+		\begin{eqnarray*}
+			B^{-1} a_i B &=& B^{-1} \times a_i \times B \\
+			&=& (b_{t(1)}^{\delta_1} \times \ldots \times b_{t(L)}^{\delta_L})^{-1} \times a_i \times (b_{t(1)}^{\delta_1} \times \ldots \times b_{t(L)}^{\delta_L}) \\
+			&=& b_{t(1)}^{-\delta_1} \times \ldots \times b_{t(L)}^{-\delta_L} \times a_i \times b_{t(1)}^{\delta_1} \times \ldots \times b_{t(L)}^{\delta_L}
+		\end{eqnarray*}
+	\item \textbf{Transition (Alice $\rightarrow$ Bob)} Symmetrically, Alice computes her transition set, $b'=A^{-1}\bar{b}A$, and sends it to Bob.
+	\item \textbf{Shared Key (Alice)} To compute the shared key $K$, Alice first subsets $a' = B^{-1} \bar{a} B$, keeping only the values corresponding to those that compose her private key $A$. For each element retained, it is inverted if the corresponding element in A was inverted. Alice then multiplies these together to get $B^{-1}AB$. Finally, by multiplying $A^{-1}$ on the left, Alice directly obtains $K_a = A^{-1}B^{-1}AB$, the shared key.
+	\item \textbf{Shared Key (Bob)} Symmetric to Alice, Bob subsets $b' = A^{-1} \bar{b} A$, keeping only the values corresponding to those composing $B$. Bob inverts the appropriate elements, and multiplies these together to get $A^{-1}BA$. Left-multiplying this by $B^{-1}$ gives $K_b = B^{-1}A^{-1}BA$, the inverse of which is $A^{-1}B^{-1}AB = K_a$. Note that Bob must invert his result to reach $K_a$, whereas Alice performs no such step.
+
+\end{enumerate}
+
+% https://arxiv.org/pdf/1103.4093.pdf mentions many open problems in this area, giving our research some sort of mandate
+
+\subsection{The Conjugacy Search Problem}
+
+The security of AAG is based on the difficulty of the Subgroup-Restricted Simultaneous Conjugacy Search Problem for the chosen platform group \cite{csp_insufficient}. This problem is a variation on the easier Conjugacy Search Problem. Understanding this underlying problem will give a better intuition for the nature of AAG and the brute-force attack used later.
+
+The \textbf{Conjugacy Search Problem} (CSP): given $g, h \in G$, find an $x \in G : x^{-1}gx = h$, if it exists.
+
+The \textbf{Simultaneous Conjugacy Search Problem} (SCSP): given $(g_1, g_2, \dots, g_N), (h_1, h_2, \dots, h_N)$ for $g_i, h_i \in G$, find an $x \in G$ such that $x^{-1} g_i x = h_i$, for all $i=1, 2, \dots, N$, if it exists.
+
+The \textbf{Subgroup-Restricted Simultaneous Conjugacy Search Problem} (SR-SCSP): given $g_i, h_i \in G$ and finitely generated subgroup $S \leq G$, find an $x \in S$ such that $x^{-1} g_i x = h_i$, for all $i=1, 2, \dots, N$, if it exists.
+
+\subsection{Attacks on AAG}\label{sec:attacks-on-aag}
+
+Denote $\mathcal{A}_L$ as the space of Alice's private keys of length $L$. This contains all possible private keys of length $L$ that Alice could choose. Given Bob's public key $b_1, \dots, b_N$ and Alice's transition set $b'_1, \dots, b'_N$, Eve must find $A \in \mathcal{A}_L$ such that $A^{-1} b_i A = b'_i$, for all $i=1, 2, \dots, N$. Without solving a variation on the \textit{membership search problem}, Eve does not have the factors $(a_{s(1)}^{\varepsilon_1}, \ldots, a_{s(L)}^{\varepsilon_L})$ of $A$, so she must employ the same process to calculate $B$. Then Eve has $A^{-1}B^{-1}AB = K$. The naive, generic solution to this problem runs in $O(2N(2N)^L)) = O(N^L)$ time. See Algorithm \ref{alg:brute-force} for specifics on our implementation.
+
+The Length-Based Attack (LBA) \cite{lba} can \textit{theoretically} be applied to many groups. Optimally, it recovers a private key in linear time with respect to public key length, however in practice, LBA is often less effective than more specialized attacks, and crucially, it relies on knowledge of a group-specific length function which in general is intractible to calculate. However, two of the most prominently studied groups for non-commutative protocols, the Braid group and Thompson's group, have turned out to be vulnerable to LBA \citeN{braid_lba_theory, braid_lba_theory_practice, braid_lba, thompson_lba}. 
+
+Efficient solutions to the CSP (and its variations) are, for the most part, group-specific, meaning no single attack is able to condemn the whole family of CSP-based protocols. LBA has had very limited success on the Heisenberg group \citeN{heisenberg_aag, heisenberg_len3}, due to the difficulty of calculating (or appoximating) the length function for the instantiation of arbitrary dimension. However there is an $O(n^5 \log^2 n)$ method \cite{heisenberg_ptime} which claims to work more reliably. Like the Heisenberg, the Polycyclic group has demonstrated some resilience to LBA \cite{polycyclic_lba}, yet numerous other attacks have been sprung on certain subfamilies under the Polycyclic umbrella \cite{polycyclic_survey}.

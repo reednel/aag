@@ -11,8 +11,7 @@ __pycache__/
 *.png
 *.jpg
 *.pdf
-!paper/paper.pdf
-# !paper/graphics/*.pdf
+!paper/images/*
 
 # Packages #
 *.7z

@@ -1,0 +1,24 @@
+\section{Introduction}
+\label{sec:intro}
+
+% Common knowledge --> project details
+Cryptographic schemes play a crucial role in modern security systems, and their resistance to attack is of utmost importance. The security of the most widely used public-key algorithms, including RSA, Diffie-Hellman, and Elliptic Curve, rely on the hardness of the prime factorization problem, discrete logarithm problem, and elliptic curve discrete logaritm problem, respectively. Using Shor's algorithm \cite{shor_algo}, each of these problems are solvable in polynomial time given a sufficiently advanced quantum computer. These problems are based in number theory, and thus rely on commutative group structure. In recent years, much research has explored the domain of non-commutative cryptography.
+
+% \paragraph{Non-Commutative Cryptography} 
+The \emph{Conjugacy Search Problem} (CSP) is the one-way function underlying many non-commutative cryptographic protocols \citeN{ko-lee, csp_app_1, csp_app_2, csp_app_3}. While quantum algorithms have been presented to solve many group-theoretic problems, so far no generic algorithm is known to solve the CSP in polynomial time \cite{polycyclic_survey}. 
+
+% \paragraph{Anshel-Anshel-Goldfeld Key Exchange}
+We focus on the Anshel-Anshel-Goldfeld (AAG) key exchange protocol \cite{aag}, whose security relies on a variant of the CSP. AAG is currently the most prominent non-commutative cryptographic protocol, and like many others, it can be instantiated using any non-commutative (also called \emph{non-abelian}) group. The chosen group is the "platform" on which the rest of the protocol is constructed. Previous research has suggested a number of platform groups for AAG, but no generic AAG implementation exists, precluding an applied comparison between these platforms.
+
+\paragraph{Contributions}
+The main contributions of this paper are:
+\begin{itemize}
+    \item We have created the first generic implementation of the AAG key exchange protocol that works with multiple platform groups.
+    \item We implement a naive brute-force attack algorithm that serves as a benchmark for comparison. Researchers developing more advanced attacks can use our tool to measure their attack performance relative to this baseline.
+    \item We provide a software platform easily extensible to additional groups defined in the SageMath library \cite{sagemath}. Researchers experimenting with new platform groups can use our generic implementation to perform key exchange.
+    \item We perform a comparison between groups suggested by prior research as platforms for AAG using our naive brute-force attack.
+\end{itemize}
+
+\paragraph{Open-Source Release}
+
+All code and simulation data is publicly available on Github: \url{https://github.com/reednel/aag}.

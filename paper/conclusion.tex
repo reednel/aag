@@ -1,0 +1,12 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have presented a generic implementation of the AAG key exchange protocol that works with any platform group defined in SageMath, and a baseline brute-force attack that should be universally applicable. We have performed a basic comparison between platform groups using small key sizes, and discovered that public set size is more important than expected. We believe that this tool has utility for future cryptographic research investigating the security of the AAG protocol under different platform groups as well as implementing novel attacks against such groups.
+
+\paragraph{Future Work} 
+
+The scope of this work is limited to a simple analysis of naive brute force attacks using small key sizes. Key sizes considered here are much smaller than those that would be used cryptographically; studying feasable key lengths would require more processing power than we had access to.
+
+\paragraph{Notes on Optimality and Security} All results presented here rely on SageMath's implementations of group-theoretic operations. Any extra time taken due to suboptimal implementation of such operations can be factored out as it will be present in all analysis of attacks against said group.
+
+This implementation is proposed for research use only, and of course, is not intended a real-world cryptographic setting. In addition to the practical suboptimalities, no effort is made to make the implementation secure. 
